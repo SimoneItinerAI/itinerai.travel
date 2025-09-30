@@ -1,0 +1,53 @@
+/* styles/globals.css */
+
+:root { 
+  --bg: #f8fafc;      /* grigio chiarissimo */
+  --text: #0f172a;    /* blu scurissimo/quasi nero */
+  --muted: #475569;   /* grigio-blu per testi secondari */
+  --brand: #2563eb;   /* blu principale */
+}
+
+* { box-sizing: border-box; }
+html, body, #__next { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a { color: var(--brand); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+h1 { font-size: 2rem; margin: 0 0 8px; }
+p { color: var(--muted); margin: 0; }
+
+/* Navbar responsive */
+.nav-links { display: flex; gap: 24px; }
+.menu-btn { display: none; background: transparent; border: none; color: #fff; font-size: 1.5rem; }
+
+
+@media (max-width: 768px) {
+.nav-links { display: none; }
+.nav-links.open { display: flex; position: absolute; top: 64px; right: 16px; flex-direction: column; gap: 12px; background: rgba(15,23,42,0.9); padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
+.menu-btn { display: block; }
+}
+
+/* Form hero responsive */
+.hero-form { display: grid; gap: 12px; max-width: 700px; margin: 0 auto; grid-template-columns: 1fr 1fr; background: rgba(255,255,255,0.15); padding: 20px; border-radius: 12px; box-shadow: 0 10px 24px rgba(0,0,0,0.25); }
+.hero-form button { grid-column: span 2; }
+
+
+@media (max-width: 640px) {
+.hero-form { grid-template-columns: 1fr; }
+.hero-form button { grid-column: auto; }
+}
+
+/* Newsletter */
+.newsletter { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; padding: 48px 20px; }
+.newsletter-inner { max-width: 960px; margin: 0 auto; display: grid; gap: 16px; }
+.newsletter-form { display: flex; gap: 12px; }
+.newsletter-form input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.1); color: #fff; }
+.newsletter-form button { padding: 12px 18px; border-radius: 8px; border: none; background: #2563eb; color: #fff; font-weight: 700; cursor: pointer; }
+@media (max-width: 640px) { .newsletter-form { flex-direction: column; } }
