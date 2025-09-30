@@ -1,9 +1,8 @@
-// pages/_app.js
 import "../styles/globals.css";
-import Layout from "../components/layout";
+import Layout from "../components/Layout";
 import Head from "next/head";
 import { useState } from "react";
-import SplashScreen from "../components/splashscreen";
+import Splashscreen from "../components/Splashscreen";
 
 export default function MyApp({ Component, pageProps }) {
   const [showSplash, setShowSplash] = useState(true);
@@ -19,13 +18,14 @@ export default function MyApp({ Component, pageProps }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
-{showSplash ? (
-<SplashScreen onFinish={() => setShowSplash(false)} />
-) : (
-<Layout show={!showSplash}>
-<Component {...pageProps} show={!showSplash} />
-</Layout>
-)}
+      {showSplash ? (
+        <Splashscreen onFinish={() => setShowSplash(false)} />
+      ) : (
+        <Layout show={!showSplash}>
+          <Component {...pageProps} show={!showSplash} />
+        </Layout>
+      )}
     </>
   );
 }
+

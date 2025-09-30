@@ -1,7 +1,7 @@
 // pages/index.js
 import Head from "next/head";
-import Hero from "../components/hero.js";
-import Newsletter from "../components/newsletter.js";
+import Hero from "../components/Hero.js";
+import Newsletter from "../components/Newsletter";
 
 export default function Home({ show }) {
 return (
