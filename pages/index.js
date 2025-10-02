@@ -2,7 +2,7 @@ import Head from "next/head";
 import Hero from "../components/Hero";
 import Newsletter from "../components/Newsletter";
 import Destinations from "../components/Destinations";
-
+import HowItWorks from "../components/HowItWorks"
 export default function Home({ show }) {
   return (
     <>
@@ -17,6 +17,7 @@ export default function Home({ show }) {
       <Hero show={show} />
       <Newsletter />
       <Destinations />
+      <HowItWorks />
     </>
   );
 }

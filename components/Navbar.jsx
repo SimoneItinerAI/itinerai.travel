@@ -33,12 +33,25 @@ export default function Navbar({ show }) {
     transition: "opacity 1.2s ease, transform 1.2s ease",
   };
 
-  const linkStyle = { color: "white", textDecoration: "none" };
+  const linkStyle = {
+    color: "white",
+    textDecoration: "none",
+    marginLeft: "16px",
+  };
 
   return (
     <nav style={navStyle}>
       {/* Logo + Testo cliccabili */}
-<Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", color: "white" }}>
+      <Link 
+  href="/" 
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    textDecoration: "none",
+    color: "white",
+  }}
+>
   <img src="/logo.png" alt="ItinerAI logo" style={{ height: 40 }} />
   <span style={{ fontWeight: 700, fontSize: "1.3rem" }}>ItinerAI</span>
 </Link>
@@ -49,6 +62,13 @@ export default function Navbar({ show }) {
         className="menu-btn"
         aria-label="Apri menu"
         onClick={() => setOpen((v) => !v)}
+        style={{
+          background: "transparent",
+          border: "none",
+          fontSize: "1.5rem",
+          color: "white",
+          cursor: "pointer",
+        }}
       >
         ☰
       </button>
@@ -58,10 +78,19 @@ export default function Navbar({ show }) {
         className={`nav-links ${open ? "open" : ""}`}
         onClick={() => setOpen(false)}
       >
-        <Link href="/" style={linkStyle}>Home</Link>
-        <Link href="/destinazioni" style={linkStyle}>Destinazioni</Link>
-        <Link href="/prenota" style={linkStyle}>Prenota</Link>
-        <Link href="/contatti" style={linkStyle}>Contatti</Link>
+     <Link 
+  href="/" 
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    textDecoration: "none",
+    color: "white",
+  }}
+>
+  <img src="/logo.png" alt="ItinerAI logo" style={{ height: 40 }} />
+  <span style={{ fontWeight: 700, fontSize: "1.3rem" }}>ItinerAI</span>
+</Link>
       </div>
     </nav>
   );

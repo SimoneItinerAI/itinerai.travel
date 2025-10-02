@@ -23,7 +23,7 @@ export default function Destinations() {
   };
 
   return (
-    <section className="destinations">
+    <section className="destinations" id="destinations">
       <h2>Destinazioni popolari</h2>
       <div className="destinations-grid">
         {places.map((place, index) => (
