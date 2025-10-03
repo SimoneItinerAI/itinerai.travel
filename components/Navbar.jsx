@@ -34,12 +34,12 @@ export default function Navbar({ show }) {
   };
 
   const linkStyle = {
-    display: "block",
-    padding: "16px 0",
     color: "#fff",
     textDecoration: "none",
-    fontSize: "1.2rem",
-    fontWeight: 500,
+    fontSize: "1.6rem",
+    fontWeight: 600,
+    margin: "16px 0",
+    textAlign: "center",
   };
 
   return (
@@ -64,7 +64,7 @@ export default function Navbar({ show }) {
         aria-label="Apri menu"
         onClick={() => setOpen(true)}
         style={{
-          fontSize: "1.5rem",
+          fontSize: "1.8rem",
           color: "white",
           background: "none",
           border: "none",
@@ -74,54 +74,73 @@ export default function Navbar({ show }) {
         ☰
       </button>
 
-      {/* Overlay menu mobile */}
-      <div className={`mobile-menu ${open ? "open" : ""}`}>
-        <button
-          onClick={() => setOpen(false)}
-          style={{
-            alignSelf: "flex-end",
-            fontSize: "1.8rem",
-            color: "#fff",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            marginBottom: "20px",
-          }}
-        >
-          ✕
-        </button>
+      {/* Menu fullscreen */}
+      {open && (
+        <div className="menu-overlay">
+          <button
+            onClick={() => setOpen(false)}
+            style={{
+              position: "absolute",
+              top: 20,
+              right: 30,
+              fontSize: "2rem",
+              color: "#fff",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            ✕
+          </button>
 
-        <Link href="/" style={linkStyle} onClick={() => setOpen(false)}>Home</Link>
-        <Link href="/destinazioni" style={linkStyle} onClick={() => setOpen(false)}>Destinazioni</Link>
-        <Link href="/prenota" style={linkStyle} onClick={() => setOpen(false)}>Prenota</Link>
-        <Link href="/contatti" style={linkStyle} onClick={() => setOpen(false)}>Contatti</Link>
-        <Link href="/chisiamo" style={linkStyle} onClick={() => setOpen(false)}>Chi siamo</Link>
-        <Link href="/login" style={linkStyle} onClick={() => setOpen(false)}>Accedi / Registrati</Link>
-      </div>
+          <div className="menu-content">
+            <Link href="/" style={linkStyle} onClick={() => setOpen(false)}>Home</Link>
+            <Link href="/destinazioni" style={linkStyle} onClick={() => setOpen(false)}>Destinazioni</Link>
+            <Link href="/prenota" style={linkStyle} onClick={() => setOpen(false)}>Prenota</Link>
+            <Link href="/contatti" style={linkStyle} onClick={() => setOpen(false)}>Contatti</Link>
+            <Link href="/chisiamo" style={linkStyle} onClick={() => setOpen(false)}>Chi siamo</Link>
+            <Link href="/login" style={linkStyle} onClick={() => setOpen(false)}>Accedi / Registrati</Link>
+          </div>
+        </div>
+      )}
 
-      {/* Stili e animazioni */}
+      {/* Stili CSS */}
       <style jsx>{`
-        .mobile-menu {
+        .menu-overlay {
           position: fixed;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          width: 75%;
-          background: #0f172a; /* sfondo opaco */
-          padding: 40px 20px;
+          inset: 0;
+          background: rgba(15, 23, 42, 0.95); /* sfondo opaco scuro */
           display: flex;
           flex-direction: column;
+          align-items: center;
+          justify-content: center;
           z-index: 999;
-          transform: translateX(100%);
-          transition: transform 0.4s ease;
+          animation: fadeIn 0.4s ease forwards;
         }
 
-        .mobile-menu.open {
-          transform: translateX(0); /* entra */
+        .menu-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 20px;
         }
 
-        .mobile-menu.closing {
-          transform: translateX(100%); /* esce */
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes fadeOut {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
         }
       `}</style>
     </nav>
