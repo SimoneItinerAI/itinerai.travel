@@ -107,16 +107,16 @@ export default function Navbar({ show }) {
       {/* Stili CSS */}
       <style jsx>{`
         .menu-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(15, 23, 42, 0.95); /* sfondo opaco scuro */
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          z-index: 999;
-          animation: fadeIn 0.4s ease forwards;
-        }
+  position: fixed;
+  inset: 0;
+  background: #0f172a; /* sfondo scuro opaco al 100% */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  animation: fadeIn 0.4s ease forwards;
+}
 
         .menu-content {
           display: flex;
