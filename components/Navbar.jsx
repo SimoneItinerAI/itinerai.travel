@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 export default function Navbar({ show }) {
   const [visible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
 
+  // animazione navbar in page load
   useEffect(() => {
     if (show) {
       const t = setTimeout(() => setVisible(true), 150);
@@ -14,6 +16,24 @@ export default function Navbar({ show }) {
       setVisible(false);
     }
   }, [show]);
+
+  // blocca lo scroll del body quando il menu è aperto
+  useEffect(() => {
+    if (open && !closing) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [open, closing]);
+
+  const openMenu = () => setOpen(true);
+  const closeMenu = () => {
+    setClosing(true);
+    setTimeout(() => {
+      setOpen(false);
+      setClosing(false);
+    }, 300); // durata animazione uscita
+  };
 
   const navStyle = {
     display: "flex",
@@ -38,13 +58,13 @@ export default function Navbar({ show }) {
     textDecoration: "none",
     fontSize: "1.6rem",
     fontWeight: 600,
-    margin: "16px 0",
+    margin: "12px 0",
     textAlign: "center",
   };
 
   return (
     <nav style={navStyle}>
-      {/* Logo + Testo cliccabili */}
+      {/* Logo + Testo */}
       <Link
         href="/"
         style={{
@@ -59,10 +79,10 @@ export default function Navbar({ show }) {
         <span style={{ fontWeight: 700, fontSize: "1.3rem" }}>ItinerAI</span>
       </Link>
 
-      {/* Pulsante hamburger */}
+      {/* Hamburger */}
       <button
         aria-label="Apri menu"
-        onClick={() => setOpen(true)}
+        onClick={openMenu}
         style={{
           fontSize: "1.8rem",
           color: "white",
@@ -74,15 +94,16 @@ export default function Navbar({ show }) {
         ☰
       </button>
 
-      {/* Menu fullscreen */}
+      {/* Overlay FULLSCREEN */}
       {open && (
-        <div className="menu-overlay">
+        <div className={`menu-overlay ${closing ? "closing" : "open"}`}>
           <button
-            onClick={() => setOpen(false)}
+            onClick={closeMenu}
+            aria-label="Chiudi menu"
             style={{
               position: "absolute",
               top: 20,
-              right: 30,
+              right: 24,
               fontSize: "2rem",
               color: "#fff",
               background: "none",
@@ -94,53 +115,61 @@ export default function Navbar({ show }) {
           </button>
 
           <div className="menu-content">
-            <Link href="/" style={linkStyle} onClick={() => setOpen(false)}>Home</Link>
-            <Link href="/destinazioni" style={linkStyle} onClick={() => setOpen(false)}>Destinazioni</Link>
-            <Link href="/prenota" style={linkStyle} onClick={() => setOpen(false)}>Prenota</Link>
-            <Link href="/contatti" style={linkStyle} onClick={() => setOpen(false)}>Contatti</Link>
-            <Link href="/chisiamo" style={linkStyle} onClick={() => setOpen(false)}>Chi siamo</Link>
-            <Link href="/login" style={linkStyle} onClick={() => setOpen(false)}>Accedi / Registrati</Link>
+            <Link href="/" style={linkStyle} onClick={closeMenu}>
+              Home
+            </Link>
+            <Link href="/destinazioni" style={linkStyle} onClick={closeMenu}>
+              Destinazioni
+            </Link>
+            <Link href="/prenota" style={linkStyle} onClick={closeMenu}>
+              Prenota
+            </Link>
+            <Link href="/contatti" style={linkStyle} onClick={closeMenu}>
+              Contatti
+            </Link>
+            <Link href="/chisiamo" style={linkStyle} onClick={closeMenu}>
+              Chi siamo
+            </Link>
+            <Link href="/login" style={linkStyle} onClick={closeMenu}>
+              Accedi / Registrati
+            </Link>
           </div>
         </div>
       )}
 
-      {/* Stili CSS */}
+      {/* CSS in-component */}
       <style jsx>{`
         .menu-overlay {
-  position: fixed;
-  inset: 0;
-  background: #0f172a; /* sfondo scuro opaco al 100% */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-  animation: fadeIn 0.4s ease forwards;
-}
-
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: #0f172a; /* opaco al 100% */
+          z-index: 9999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0;
+          transform: translateY(-10px);
+          transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .menu-overlay.open {
+          opacity: 1;
+          transform: translateY(0); /* entrata */
+        }
+        .menu-overlay.closing {
+          opacity: 0;
+          transform: translateY(-10px); /* uscita */
+        }
         .menu-content {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 20px;
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes fadeOut {
-          from {
-            opacity: 1;
-          }
-          to {
-            opacity: 0;
-          }
+          gap: 8px;
+          padding: 20px;
+          width: 100%;
+          max-width: 420px;
         }
       `}</style>
     </nav>
