@@ -35,10 +35,10 @@ export default function Navbar({ show }) {
 
   const linkStyle = {
     display: "block",
-    padding: "12px 0",
+    padding: "16px 0",
     color: "#fff",
     textDecoration: "none",
-    fontSize: "1.1rem",
+    fontSize: "1.2rem",
     fontWeight: 500,
   };
 
@@ -61,9 +61,8 @@ export default function Navbar({ show }) {
 
       {/* Pulsante hamburger */}
       <button
-        className="menu-btn"
         aria-label="Apri menu"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => setOpen(true)}
         style={{
           fontSize: "1.5rem",
           color: "white",
@@ -75,56 +74,54 @@ export default function Navbar({ show }) {
         ☰
       </button>
 
-      {/* Menu mobile (overlay) */}
-      {open && (
-        <div
+      {/* Overlay menu mobile */}
+      <div className={`mobile-menu ${open ? "open" : ""}`}>
+        <button
+          onClick={() => setOpen(false)}
           style={{
-            position: "fixed",
-            top: 0,
-            right: 0,
-            bottom: 0,
-            width: "70%",
-            background: "#0f172a",
-            padding: "40px 20px",
-            display: "flex",
-            flexDirection: "column",
-            zIndex: 999,
-            animation: "slideIn 0.3s ease",
+            alignSelf: "flex-end",
+            fontSize: "1.8rem",
+            color: "#fff",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            marginBottom: "20px",
           }}
         >
-          <button
-            onClick={() => setOpen(false)}
-            style={{
-              alignSelf: "flex-end",
-              fontSize: "1.5rem",
-              color: "#fff",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              marginBottom: "20px",
-            }}
-          >
-            ✕
-          </button>
+          ✕
+        </button>
 
-          <Link href="/" style={linkStyle} onClick={() => setOpen(false)}>Home</Link>
-          <Link href="/destinazioni" style={linkStyle} onClick={() => setOpen(false)}>Destinazioni</Link>
-          <Link href="/prenota" style={linkStyle} onClick={() => setOpen(false)}>Prenota</Link>
-          <Link href="/contatti" style={linkStyle} onClick={() => setOpen(false)}>Contatti</Link>
-          <Link href="/chisiamo" style={linkStyle} onClick={() => setOpen(false)}>Chi siamo</Link>
-          <Link href="/login" style={linkStyle} onClick={() => setOpen(false)}>Accedi / Registrati</Link>
-        </div>
-      )}
+        <Link href="/" style={linkStyle} onClick={() => setOpen(false)}>Home</Link>
+        <Link href="/destinazioni" style={linkStyle} onClick={() => setOpen(false)}>Destinazioni</Link>
+        <Link href="/prenota" style={linkStyle} onClick={() => setOpen(false)}>Prenota</Link>
+        <Link href="/contatti" style={linkStyle} onClick={() => setOpen(false)}>Contatti</Link>
+        <Link href="/chisiamo" style={linkStyle} onClick={() => setOpen(false)}>Chi siamo</Link>
+        <Link href="/login" style={linkStyle} onClick={() => setOpen(false)}>Accedi / Registrati</Link>
+      </div>
 
-      {/* Animazioni CSS */}
+      {/* Stili e animazioni */}
       <style jsx>{`
-        @keyframes slideIn {
-          from {
-            transform: translateX(100%);
-          }
-          to {
-            transform: translateX(0);
-          }
+        .mobile-menu {
+          position: fixed;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 75%;
+          background: #0f172a; /* sfondo opaco */
+          padding: 40px 20px;
+          display: flex;
+          flex-direction: column;
+          z-index: 999;
+          transform: translateX(100%);
+          transition: transform 0.4s ease;
+        }
+
+        .mobile-menu.open {
+          transform: translateX(0); /* entra */
+        }
+
+        .mobile-menu.closing {
+          transform: translateX(100%); /* esce */
         }
       `}</style>
     </nav>
