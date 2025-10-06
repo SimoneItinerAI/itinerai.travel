@@ -1,11 +1,14 @@
 // next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',   // <-- nuova sintassi per static export
   images: {
-    unoptimized: true, // utile se usi <Image> di Next
+    domains: ["images.unsplash.com"], // ✅ dominio corretto per le API di Unsplash
+    unoptimized: true,                // ✅ utile per export statico
   },
+  output: "export",                   // ✅ necessario per Cloudflare Pages
 };
 
 module.exports = nextConfig;
+
+
 
