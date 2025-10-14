@@ -211,3 +211,8 @@ p { color: var(--muted); margin: 0; }
   margin-bottom: 16px;
   color: #555;
 }
+/* Keyframes globali (usati dallo skeleton in /results) */
+@keyframes loading {
+  0% { background-position: 100% 0 }
+  100% { background-position: 0 0 }
+}

@@ -15,7 +15,7 @@ export default function TransitionScreen() {
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % phrases.length);
-    }, 2000); // cambia frase ogni 2s
+    }, 1000); 
     return () => clearInterval(interval);
   }, []);
 
