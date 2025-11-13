@@ -16,13 +16,21 @@ function App() {
       <Navbar />
       <Hero />
       <WhatIsItinerAI />
-      <HowItWorks />
+      <section id="how" className="scroll-mt-24">
+        <HowItWorks />
+      </section>
       <WhyChoose />
-      <Examples />
-      <DemoTryIt />
+      <section id="examples" className="scroll-mt-24">
+        <Examples />
+      </section>
+      <section id="try" className="scroll-mt-24">
+        <DemoTryIt />
+      </section>
       <Technology />
       <FinalCTA />
-      <Footer />
+      <section id="contact" className="scroll-mt-24">
+        <Footer />
+      </section>
       <Aura />
     </div>
   );

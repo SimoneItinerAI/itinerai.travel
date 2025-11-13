@@ -129,18 +129,7 @@ export default function Hero() {
             <line x1="1010" y1="650" x2="1010" y2="730" />
           </g>
 
-          {/* Flying planes on different routes */}
-          <g className="plane-1" filter="url(#glow-hero)">
-            <text x="0" y="0" fontSize="24" fill="#f97316" textAnchor="middle">✈️</text>
-          </g>
-
-          <g className="plane-2" filter="url(#glow-hero)">
-            <text x="0" y="0" fontSize="24" fill="#3b82f6" textAnchor="middle">✈️</text>
-          </g>
-
-          <g className="plane-3" filter="url(#glow-hero)">
-            <text x="0" y="0" fontSize="24" fill="#f97316" textAnchor="middle">✈️</text>
-          </g>
+          
 
           {/* Connecting lines between nodes - tech style */}
           <line x1="200" y1="150" x2="500" y2="250" stroke="#3b82f6" strokeWidth="0.5" opacity="0.2" strokeDasharray="5,5" />
@@ -156,7 +145,7 @@ export default function Hero() {
       </div>
 
       {/* Dark overlay for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/40 via-slate-950/50 to-slate-950/70"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/20 via-slate-950/30 to-slate-950/50"></div>
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 text-center pt-24">
 
