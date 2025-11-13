@@ -4,7 +4,7 @@ export default function Navbar() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="h-16 mt-4 rounded-full border border-white/15 bg-slate-950/60 backdrop-blur flex items-center justify-between px-5">
           <a href="#" className="flex items-center gap-3">
-            <img src="/logo.svg" alt="ItinerAI" className="h-8 w-8" />
+            <img src="/logo.png?v=20251113" alt="ItinerAI" className="h-8 w-8" />
             <span className="text-white/90 font-semibold">ItinerAI</span>
           </a>
           <nav className="hidden md:flex items-center gap-6 text-sm">
