@@ -1,4 +1,5 @@
 import Hero from './components/Hero';
+import Navbar from './components/Navbar';
 import WhatIsItinerAI from './components/WhatIsItinerAI';
 import HowItWorks from './components/HowItWorks';
 import WhyChoose from './components/WhyChoose';
@@ -12,6 +13,7 @@ import Aura from './components/Aura';
 function App() {
   return (
     <div className="min-h-screen bg-white">
+      <Navbar />
       <Hero />
       <WhatIsItinerAI />
       <HowItWorks />
