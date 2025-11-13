@@ -14,7 +14,7 @@ export default function Hero() {
       />
 
       {/* Animated SVG elements */}
-      <div className="absolute inset-0 opacity-40">
+      <div className="absolute left-0 right-0 bottom-0 top-20 opacity-40 pointer-events-none">
         <svg className="w-full h-full" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
           <defs>
             <filter id="glow-hero" x="-50%" y="-50%" width="200%" height="200%">
