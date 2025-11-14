@@ -122,18 +122,10 @@ export default function HowItWorks() {
                   </li>
                 </ul>
                 <div className="flex justify-start">
-                  <img loading="lazy" decoding="async" fetchPriority="low" referrerPolicy="no-referrer" src="https://source.unsplash.com/random/200x120/?rome,italy,travel" alt="tappa" className="w-32 h-20 rounded-lg object-cover"/>
+                  <img loading="lazy" decoding="async" fetchPriority="low" src="/background.png" alt="tappa" className="w-32 h-20 rounded-lg object-cover"/>
                 </div>
               </div>
-              <div className="flex-shrink-0">
-                <svg className="w-28 h-20" viewBox="0 0 120 80" preserveAspectRatio="xMidYMid meet">
-                  <rect x="2" y="2" width="116" height="76" rx="8" fill="none" stroke="#0f172a" strokeWidth="1" opacity="0.2" />
-                  <circle cx="20" cy="60" r="3" fill="#f97316" />
-                  <circle cx="60" cy="40" r="3" fill="#3b82f6" />
-                  <circle cx="100" cy="25" r="3" fill="#f97316" />
-                  <path d="M20 60 L60 40 L100 25" fill="none" stroke="#3b82f6" strokeWidth="1.5" />
-                </svg>
-              </div>
+              
             </div>
             <h3 className="text-lg font-semibold text-slate-900">Itinerario generato</h3>
             <p className="text-slate-600 text-sm">Ottieni un itinerario completo, personalizzato e prenotabile.</p>
