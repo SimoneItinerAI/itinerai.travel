@@ -6,12 +6,15 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen w-full bg-slate-950 text-white overflow-hidden flex items-center justify-center">
-      {/* Background image - optimized for mobile cropping */}
-      <img
-        src="/igor-omilaev-FHgWFzDDAOs-unsplash.jpg"
-        alt=""
-        className="absolute inset-0 w-full h-full object-cover object-[center_35%] sm:object-center"
-      />
+      {/* Background image - supports PNG with JPG fallback */}
+      <picture>
+        <source srcSet="/background.png" type="image/png" />
+        <img
+          src="/background.jpg"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover object-[center_35%] sm:object-center"
+        />
+      </picture>
 
       {/* Animated SVG elements */}
       <div className="absolute left-0 right-0 bottom-0 top-20 opacity-40 pointer-events-none">
