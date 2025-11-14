@@ -122,7 +122,7 @@ export default function HowItWorks() {
                   </li>
                 </ul>
                 <div className="flex justify-start">
-                  <img loading="lazy" src="https://images.unsplash.com/photo-1504198453319-5ce911bafcde?w=200&h=120&fit=crop&auto=format&dpr=2" alt="tappa" className="w-32 h-20 rounded-lg object-cover"/>
+                  <img loading="lazy" decoding="async" fetchPriority="low" referrerPolicy="no-referrer" src="https://source.unsplash.com/random/200x120/?rome,italy,travel" alt="tappa" className="w-32 h-20 rounded-lg object-cover"/>
                 </div>
               </div>
               <div className="flex-shrink-0">
