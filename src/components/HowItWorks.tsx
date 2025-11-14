@@ -22,8 +22,86 @@ export default function HowItWorks() {
       @keyframes dashFlow { to{stroke-dashoffset:-120} }
       @keyframes nodePulse { 0%,100%{r:4;opacity:.35} 50%{r:6;opacity:.9} }
       @keyframes fadeUp { 0%{opacity:0;transform:translateY(8px)} 100%{opacity:1;transform:translateY(0)} }
+      @keyframes blink { 0%,40%{opacity:1} 50%,100%{opacity:0} }
+      @keyframes tiltIn { 0%{opacity:0; transform:rotateX(12deg) translateY(6px) scale(.98)} 100%{opacity:1; transform:rotateX(0) translateY(0) scale(1)} }
+      @keyframes rotate360 { to{transform:rotate(360deg)} }
+      @keyframes barSlide { 0%{transform:translateX(-60%)} 100%{transform:translateX(120%)} }
     `
   }), []);
+
+  const [stepIndex, setStepIndex] = useState(0);
+  const flowTimersRef = useRef<number[]>([]);
+  const typingTimersRef = useRef<number[]>([]);
+  const [typed1, setTyped1] = useState('');
+  const [typed2, setTyped2] = useState('');
+  const [typed3, setTyped3] = useState('');
+  const [showUI1, setShowUI1] = useState(false);
+  const [showUI2, setShowUI2] = useState(false);
+  const [showUI3, setShowUI3] = useState(false);
+  const full1 = 'Step 1: Inserisci la destinazione che vuoi esplorare.';
+  const full2 = 'Step 2: ItinerAI analizza voli, hotel, attività e ristoranti in tempo reale.';
+  const full3 = 'Step 3: Ricevi un itinerario personalizzato e completo.';
+
+  useEffect(() => {
+    flowTimersRef.current.forEach(t => clearTimeout(t));
+    flowTimersRef.current = [];
+    if (inView) {
+      setStepIndex(1);
+      flowTimersRef.current.push(window.setTimeout(() => setStepIndex(2), 2200));
+      flowTimersRef.current.push(window.setTimeout(() => setStepIndex(3), 4600));
+    } else {
+      setStepIndex(0);
+      setTyped1(''); setTyped2(''); setTyped3('');
+      setShowUI1(false); setShowUI2(false); setShowUI3(false);
+      typingTimersRef.current.forEach(t => clearInterval(t));
+      typingTimersRef.current = [];
+    }
+    return () => {
+      flowTimersRef.current.forEach(t => clearTimeout(t));
+      flowTimersRef.current = [];
+    };
+  }, [inView]);
+
+  useEffect(() => {
+    typingTimersRef.current.forEach(t => clearInterval(t));
+    typingTimersRef.current = [];
+    if (stepIndex === 1) {
+      setTyped1(''); setShowUI1(false);
+      let i = 0;
+      const id = window.setInterval(() => {
+        i += 1;
+        setTyped1(full1.slice(0, i));
+        if (i >= full1.length) { clearInterval(id); setShowUI1(true); }
+      }, 24);
+      typingTimersRef.current.push(id);
+    }
+    if (stepIndex === 2) {
+      setTyped2(''); setShowUI2(false);
+      let i = 0;
+      const id = window.setInterval(() => {
+        i += 1;
+        setTyped2(full2.slice(0, i));
+        if (i >= full2.length) { clearInterval(id); setShowUI2(true); }
+      }, 22);
+      typingTimersRef.current.push(id);
+    }
+    if (stepIndex === 3) {
+      setTyped3(''); setShowUI3(false);
+      let i = 0;
+      const id = window.setInterval(() => {
+        i += 1;
+        setTyped3(full3.slice(0, i));
+        if (i >= full3.length) { clearInterval(id); setShowUI3(true); }
+      }, 22);
+      typingTimersRef.current.push(id);
+    }
+    return () => {
+      typingTimersRef.current.forEach(t => clearInterval(t));
+      typingTimersRef.current = [];
+    };
+  }, [stepIndex]);
+
+  const isCompleted = stepIndex >= 3 && showUI3;
 
   return (
     <section ref={sectionRef} className="py-24 px-6 bg-white">
@@ -33,109 +111,104 @@ export default function HowItWorks() {
 
         <style>{animations.style}</style>
 
-        <div className={`grid md:grid-cols-3 gap-8 transition-all duration-500 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
-          <div className="relative group rounded-3xl p-8 border border-white/10 bg-gradient-to-br from-slate-900/5 to-brand-blue/10 backdrop-blur-xl shadow-[0_0_20px_rgba(59,130,246,0.08)] transition-transform duration-300 hover:scale-[1.02]">
-            <div className="absolute -inset-[1px] rounded-3xl pointer-events-none">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-brand-blue/20 to-brand-orange/20 opacity-40 blur-md"></div>
-            </div>
-            <div className="absolute -top-6 -left-6 w-12 h-12 bg-gradient-to-br from-brand-orange to-brand-blue rounded-full text-white font-bold flex items-center justify-center shadow" aria-hidden>1</div>
-            <div className="mb-6">
-              <div className="relative">
-                <div className="flex items-center gap-3 bg-white/70 rounded-full border border-brand-blue/30 px-5 py-3 shadow-sm">
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-brand-orange to-brand-blue opacity-80" style={{animation: 'glowPulse 2.2s ease-in-out infinite'}} />
-                  <span className="text-sm text-slate-500">Cerca destinazione...</span>
+        <div className={`relative flex items-center justify-center transition-all duration-500 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+          <div className="absolute w-[520px] h-[520px] rounded-full bg-gradient-to-r from-brand-blue/30 to-brand-orange/30 blur-3xl opacity-40"></div>
+          <div className="relative" style={{perspective: '1200px'}}>
+            <div className="relative mx-auto transition-transform duration-700 hover:scale-[1.02]" style={{transform: 'rotateX(12deg) rotateY(-10deg) rotateZ(-2deg)'}}>
+              <div className="relative w-[320px] sm:w-[360px] md:w-[420px] h-[660px] rounded-[36px] bg-gradient-to-br from-slate-900 to-slate-800 border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,0.55)]">
+                <div className="absolute inset-0 rounded-[36px] ring-1 ring-white/5"></div>
+                <div className="absolute inset-0 rounded-[36px] bg-gradient-to-t from-white/8 to-transparent opacity-30"></div>
+                <div className="absolute inset-[10px] rounded-[28px] overflow-hidden bg-slate-950">
+                  <div className="flex flex-col h-full justify-between">
+                    <div className={`p-6 space-y-4 transition-all duration-700 ${stepIndex >= 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`} style={stepIndex >= 1 ? {animation: 'fadeUp .6s ease forwards'} : undefined}>
+                      <p className="text-[13px] md:text-sm font-medium text-slate-100 tracking-wide">{typed1}{typed1.length < full1.length ? <span style={{animation: 'blink 1s step-end infinite'}} className="inline-block w-[1ch] h-[1em] align-[-0.2em] bg-slate-300/70"></span> : null}</p>
+                      {showUI1 && (
+                        <div className="relative mx-auto w-full">
+                          <div className="flex items-center gap-3 bg-white/10 rounded-2xl border border-white/20 px-6 py-4">
+                            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-brand-orange to-brand-blue opacity-80" style={{animation: 'glowPulse 2.2s ease-in-out infinite'}} />
+                            <span className="text-base text-slate-100">Cerca destinazione...</span>
+                          </div>
+                          <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-px overflow-hidden">
+                            <div className="h-px w-1/3 bg-gradient-to-r from-transparent via-brand-orange to-transparent opacity-70" style={{animation: 'scanMove 1.8s linear infinite'}} />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div className={`px-6 transition-all duration-700 ${stepIndex >= 2 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`} style={stepIndex >= 2 ? {animation: 'fadeUp .6s ease forwards'} : undefined}>
+                      <p className="text-[13px] md:text-sm font-medium text-slate-100 tracking-wide mb-3">{typed2}{typed2.length < full2.length ? <span style={{animation: 'blink 1s step-end infinite'}} className="inline-block w-[1ch] h-[1em] align-[-0.2em] bg-slate-300/70"></span> : null}</p>
+                      {showUI2 && (
+                        <div className="rounded-xl bg-white/6 border border-white/10 p-3 flex items-center gap-4">
+                          <div className="relative w-8 h-8">
+                            <svg viewBox="0 0 36 36" className="w-8 h-8" style={isCompleted ? undefined : {animation: 'rotate360 1.8s linear infinite'}}>
+                              <circle cx="18" cy="18" r="16" fill="none" stroke="#1f2937" strokeWidth="4" opacity="0.25" />
+                              <circle cx="18" cy="18" r="16" fill="none" stroke={isCompleted ? '#10b981' : '#3b82f6'} strokeWidth="4" strokeDasharray={isCompleted ? undefined : '80 100'} strokeLinecap="round" />
+                            </svg>
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-semibold text-slate-100">{isCompleted ? 'Itinerario completato' : 'Caricamento itinerario...'}</span>
+                              <span className={`text-xs ${isCompleted ? 'text-brand-orange' : 'text-brand-blue'}`}>{isCompleted ? '✓' : '⏳'}</span>
+                            </div>
+                            <div className="mt-2 h-2 rounded-full bg-white/10 overflow-hidden">
+                              <div className={`h-full rounded-full ${isCompleted ? 'bg-gradient-to-r from-brand-orange to-brand-orangelight' : 'bg-gradient-to-r from-brand-blue to-brand-orange'}`} style={isCompleted ? {width: '100%'} : {animation: 'barSlide 1.6s linear infinite', width: '40%'}} />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  <div className={`p-5 space-y-3 transition-all duration-700 ${stepIndex >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`} style={stepIndex >= 3 ? {animation: 'fadeUp .6s ease forwards'} : undefined}>
+                      <p className="text-[13px] md:text-sm font-medium text-slate-100 tracking-wide">{typed3}{typed3.length < full3.length ? <span style={{animation: 'blink 1s step-end infinite'}} className="inline-block w-[1ch] h-[1em] align-[-0.2em] bg-slate-300/70"></span> : null}</p>
+                      {showUI3 && (
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-1 gap-2.5">
+                            <div className="relative flex items-center gap-3 rounded-xl bg-white/6 px-2.5 py-2 border border-white/10 shadow-[0_0_12px_rgba(59,130,246,0.10)]">
+                              <img loading="lazy" decoding="async" src="/step3.png" alt="giorno1" className="w-10 h-10 rounded-md object-cover ring-1 ring-white/10"/>
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-sm font-semibold text-slate-100">Giorno 1</span>
+                                  <span className="text-xs">✈️</span>
+                                </div>
+                                <ul className="mt-0.5 text-xs text-slate-300 space-y-0.5 list-disc list-inside">
+                                  <li>Arrivo e check-in</li>
+                                  <li>Passeggiata nel centro</li>
+                                </ul>
+                              </div>
+                            </div>
+                            <div className="relative flex items-center gap-3 rounded-xl bg-white/6 px-2.5 py-2 border border-white/10 shadow-[0_0_12px_rgba(59,130,246,0.10)]">
+                              <img loading="lazy" decoding="async" src="/step3.png" alt="giorno2" className="w-10 h-10 rounded-md object-cover ring-1 ring-white/10"/>
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-sm font-semibold text-slate-100">Giorno 2</span>
+                                  <span className="text-xs">⭐</span>
+                                </div>
+                                <ul className="mt-0.5 text-xs text-slate-300 space-y-0.5 list-disc list-inside">
+                                  <li>Tour culturale</li>
+                                  <li>Museo principale</li>
+                                </ul>
+                              </div>
+                            </div>
+                            <div className="relative flex items-center gap-3 rounded-xl bg-white/6 px-2.5 py-2 border border-white/10 shadow-[0_0_12px_rgba(249,115,22,0.10)]">
+                              <img loading="lazy" decoding="async" src="/step3.png" alt="giorno3" className="w-10 h-10 rounded-md object-cover ring-1 ring-white/10"/>
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-sm font-semibold text-slate-100">Giorno 3</span>
+                                  <span className="text-xs">🍽️</span>
+                                </div>
+                                <ul className="mt-0.5 text-xs text-slate-300 space-y-0.5 list-disc list-inside">
+                                  <li>Escursione breve</li>
+                                  <li>Cena tipica</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                          
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <div className="absolute left-4 right-4 top-1/2 -translate-y-1/2 h-px overflow-hidden">
-                  <div className="h-px w-1/3 bg-gradient-to-r from-transparent via-brand-orange to-transparent opacity-70" style={{animation: 'scanMove 1.8s linear infinite'}} />
-                </div>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-orange/20 to-brand-blue/20 flex items-center justify-center border border-brand-orange/40 shadow-inner">
-                <span className="text-2xl">🌍</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900">Inserisci la destinazione</h3>
-                <p className="text-slate-600 text-sm">Digita la destinazione che vuoi esplorare.</p>
-              </div>
-            </div>
-            <svg className="absolute right-6 bottom-6 w-24 h-16 opacity-15 pointer-events-none" viewBox="0 0 120 80">
-              <g fill="none" stroke="#3b82f6" strokeWidth="0.8" opacity="0.35">
-                <rect x="2" y="20" width="50" height="14" rx="6" />
-                <line x1="6" y1="27" x2="48" y2="27" />
-              </g>
-              <circle cx="80" cy="40" r="12" fill="none" stroke="#f97316" strokeWidth="0.8" opacity="0.25" />
-              <circle cx="80" cy="40" r="2" fill="#f97316" opacity="0.6" />
-            </svg>
-          </div>
-
-          <div className="relative group rounded-3xl p-8 border border-white/10 bg-gradient-to-br from-slate-900/5 to-brand-blue/10 backdrop-blur-xl shadow-[0_0_20px_rgba(59,130,246,0.08)] transition-transform duration-300 hover:scale-[1.02]">
-            <div className="absolute -inset-[1px] rounded-3xl pointer-events-none">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-brand-blue/20 to-brand-orange/20 opacity-40 blur-md"></div>
-            </div>
-            <div className="absolute -top-6 -left-6 w-12 h-12 bg-gradient-to-br from-brand-orange to-brand-blue rounded-full text-white font-bold flex items-center justify-center shadow" aria-hidden>2</div>
-            <svg className="w-full h-28 mb-6" viewBox="0 0 400 120" preserveAspectRatio="xMidYMid meet">
-              <defs>
-                <linearGradient id="aiGrad" x1="0" x2="1" y1="0" y2="0">
-                  <stop offset="0%" stopColor="#f97316" />
-                  <stop offset="100%" stopColor="#3b82f6" />
-                </linearGradient>
-              </defs>
-              <g fill="none" stroke="url(#aiGrad)" strokeWidth="1.5" strokeLinecap="round">
-                <path d="M20 60 Q 100 20 180 60 T 340 60" strokeDasharray="120 120" style={{animation: 'dashFlow 3s linear infinite'}} />
-                <path d="M40 80 Q 120 40 200 80 T 360 80" strokeDasharray="120 120" style={{animation: 'dashFlow 3.2s linear infinite', animationDelay: '.3s'}} />
-              </g>
-              <circle cx="180" cy="60" r="4" fill="#f97316" style={{animation: 'nodePulse 2s ease-in-out infinite'}} />
-              <circle cx="240" cy="70" r="4" fill="#3b82f6" style={{animation: 'nodePulse 2.2s ease-in-out infinite', animationDelay: '.4s'}} />
-              <circle cx="300" cy="60" r="4" fill="#f97316" style={{animation: 'nodePulse 2s ease-in-out infinite', animationDelay: '.8s'}} />
-            </svg>
-            <h3 className="text-lg font-semibold text-slate-900">Elaborazione dell’intelligenza artificiale</h3>
-            <p className="text-slate-600 text-sm">ItinerAI analizza voli, hotel, ristoranti e attività in tempo reale.</p>
-            <svg className="absolute left-6 bottom-6 w-24 h-16 opacity-15 pointer-events-none" viewBox="0 0 120 80">
-              <g fill="none" stroke="#3b82f6" strokeWidth="0.6" opacity="0.35">
-                <rect x="8" y="10" width="24" height="24" rx="4" />
-                <line x1="32" y1="22" x2="70" y2="22" />
-                <circle cx="90" cy="22" r="4" />
-              </g>
-            </svg>
-          </div>
-
-          <div className="relative group rounded-3xl p-8 border border-white/10 bg-gradient-to-br from-slate-900/5 to-brand-blue/10 backdrop-blur-xl shadow-[0_0_20px_rgba(59,130,246,0.08)] transition-transform duration-300 hover:scale-[1.02]">
-            <div className="absolute -inset-[1px] rounded-3xl pointer-events-none">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-brand-blue/20 to-brand-orange/20 opacity-40 blur-md"></div>
-            </div>
-            <div className="absolute -top-6 -left-6 w-12 h-12 bg-gradient-to-br from-brand-orange to-brand-blue rounded-full text-white font-bold flex items-center justify-center shadow" aria-hidden>3</div>
-            <div className="flex md:flex-row flex-col items-start gap-4 mb-4" style={{animation: 'fadeUp .6s ease forwards'}}>
-              <div className="flex-1 space-y-3">
-                <ul className="space-y-2">
-                  <li className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-slate-800">Giorno 1</span>
-                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-gradient-to-r from-brand-orange/20 to-brand-orange/10 border border-brand-orange/40"><svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="1.5"><path d="M2 16 L22 12"/><path d="M6 5 L10 13"/><path d="M10 13 L6 15"/></svg>Volo</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-slate-800">Giorno 2</span>
-                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-gradient-to-r from-brand-blue/20 to-brand-blue/10 border border-brand-blue/40"><svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5"><rect x="3" y="9" width="18" height="10" rx="2"/><path d="M8 9 V6 H16 V9"/></svg>Hotel</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-slate-800">Giorno 3</span>
-                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-gradient-to-r from-brand-orange/20 to-brand-orange/10 border border-brand-orange/40"><svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="1.5"><path d="M12 2 L14 8 L20 9 L15 13 L16 20 L12 17 L8 20 L9 13 L4 9 L10 8 Z"/></svg>Attività</span>
-                  </li>
-                </ul>
-                <div className="flex justify-start">
-                  <img loading="lazy" decoding="async" fetchPriority="low" src="/background.png" alt="tappa" className="w-32 h-20 rounded-lg object-cover"/>
-                </div>
-              </div>
-              
-            </div>
-            <h3 className="text-lg font-semibold text-slate-900">Itinerario generato</h3>
-            <p className="text-slate-600 text-sm">Ottieni un itinerario completo, personalizzato e prenotabile.</p>
-            <svg className="absolute right-6 bottom-6 w-24 h-16 opacity-15 pointer-events-none" viewBox="0 0 120 80">
-              <g fill="none" stroke="#f97316" strokeWidth="0.6" opacity="0.35">
-                <path d="M10 60 L40 40 L70 55 L100 35" />
-                <circle cx="40" cy="40" r="3" />
-                <circle cx="70" cy="55" r="3" />
-              </g>
-            </svg>
           </div>
         </div>
 
