@@ -105,66 +105,34 @@ export default function HowItWorks() {
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-brand-blue/20 to-brand-orange/20 opacity-40 blur-md"></div>
             </div>
             <div className="absolute -top-6 -left-6 w-12 h-12 bg-gradient-to-br from-brand-orange to-brand-blue rounded-full text-white font-bold flex items-center justify-center shadow" aria-hidden>3</div>
-            <div className="bg-white/70 backdrop-blur rounded-2xl border border-brand-blue/20 p-5 mb-4">
-              <div className="flex items-center justify-between mb-4" style={{animation: 'fadeUp .6s ease forwards'}}>
-                <div className="text-sm font-medium text-slate-700">Roma</div>
-                <div className="text-xs text-slate-500">3 giorni</div>
+            <div className="flex md:flex-row flex-col items-start gap-4 mb-4" style={{animation: 'fadeUp .6s ease forwards'}}>
+              <div className="flex-1 space-y-3">
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-slate-800">Giorno 1</span>
+                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-gradient-to-r from-brand-orange/20 to-brand-orange/10 border border-brand-orange/40"><svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="1.5"><path d="M2 16 L22 12"/><path d="M6 5 L10 13"/><path d="M10 13 L6 15"/></svg>Volo</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-slate-800">Giorno 2</span>
+                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-gradient-to-r from-brand-blue/20 to-brand-blue/10 border border-brand-blue/40"><svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5"><rect x="3" y="9" width="18" height="10" rx="2"/><path d="M8 9 V6 H16 V9"/></svg>Hotel</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-slate-800">Giorno 3</span>
+                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-gradient-to-r from-brand-orange/20 to-brand-orange/10 border border-brand-orange/40"><svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="1.5"><path d="M12 2 L14 8 L20 9 L15 13 L16 20 L12 17 L8 20 L9 13 L4 9 L10 8 Z"/></svg>Attività</span>
+                  </li>
+                </ul>
+                <div className="flex justify-start">
+                  <img loading="lazy" src="https://images.unsplash.com/photo-1504198453319-5ce911bafcde?w=200&h=120&fit=crop&auto=format&dpr=2" alt="tappa" className="w-32 h-20 rounded-lg object-cover"/>
+                </div>
               </div>
-              <div className="grid md:grid-cols-2 gap-4" style={{animation: 'fadeUp .8s ease forwards', animationDelay: '.1s'}}>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-brand-orange flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 16 L22 12"/><path d="M6 5 L10 13"/><path d="M10 13 L6 15"/></svg>
-                    <div>
-                      <div className="text-sm font-semibold text-slate-800">Giorno 1</div>
-                      <div className="text-xs text-slate-600">Volo e check‑in in hotel</div>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-brand-blue flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="9" width="18" height="10" rx="2"/><path d="M8 9 V6 H16 V9"/></svg>
-                    <div>
-                      <div className="text-sm font-semibold text-slate-800">Giorno 2</div>
-                      <div className="text-xs text-slate-600">Attività culturali e pranzo tipico</div>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-brand-orange flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 4 L18 4"/><path d="M4 8 L20 8"/><path d="M6 12 L18 12"/><path d="M10 16 L14 16"/></svg>
-                    <div>
-                      <div className="text-sm font-semibold text-slate-800">Giorno 3</div>
-                      <div className="text-xs text-slate-600">Passeggiata serale e cena</div>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 pt-2">
-                    <img loading="lazy" src="https://images.unsplash.com/photo-1504198453319-5ce911bafcde?w=160&h=100&fit=crop&auto=format&dpr=2" alt="tappa 1" className="w-24 h-16 rounded-lg object-cover"/>
-                    <img loading="lazy" src="https://images.unsplash.com/photo-1505761671935-60b3a7427bad?w=160&h=100&fit=crop&auto=format&dpr=2" alt="tappa 2" className="w-24 h-16 rounded-lg object-cover"/>
-                    <img loading="lazy" src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=160&h=100&fit=crop&auto=format&dpr=2" alt="tappa 3" className="w-24 h-16 rounded-lg object-cover"/>
-                  </div>
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-brand-orange/20 to-brand-orange/10 border border-brand-orange/40"><svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="1.5"><path d="M2 16 L22 12"/><path d="M6 5 L10 13"/><path d="M10 13 L6 15"/></svg>Volo</span>
-                    <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-brand-blue/20 to-brand-blue/10 border border-brand-blue/40"><svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5"><rect x="3" y="9" width="18" height="10" rx="2"/><path d="M8 9 V6 H16 V9"/></svg>Hotel</span>
-                    <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-brand-orange/20 to-brand-orange/10 border border-brand-orange/40"><svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="1.5"><path d="M12 2 L14 8 L20 9 L15 13 L16 20 L12 17 L8 20 L9 13 L4 9 L10 8 Z"/></svg>Attività</span>
-                    <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-gradient-to-r from-brand-blue/20 to-brand-blue/10 border border-brand-blue/40"><svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5"><path d="M8 3 L8 21"/><path d="M12 8 C12 12 20 12 20 8 L20 21"/></svg>Ristorante</span>
-                  </div>
-                </div>
-                <div className="relative rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 border border-brand-blue/20 p-3">
-                  <svg className="w-full h-32" viewBox="0 0 300 140" preserveAspectRatio="xMidYMid meet">
-                    <defs>
-                      <linearGradient id="routeGrad" x1="0" x2="1" y1="0" y2="0">
-                        <stop offset="0%" stopColor="#f97316" />
-                        <stop offset="100%" stopColor="#3b82f6" />
-                      </linearGradient>
-                    </defs>
-                    <g opacity="0.15" stroke="#0f172a" strokeWidth="1">
-                      <rect x="1" y="1" width="298" height="138" rx="10" fill="none" />
-                      <line x1="50" y1="10" x2="50" y2="130" />
-                      <line x1="150" y1="10" x2="150" y2="130" />
-                      <line x1="250" y1="10" x2="250" y2="130" />
-                    </g>
-                    <path d="M30 110 Q 80 70 130 100 T 220 60" fill="none" stroke="url(#routeGrad)" strokeWidth="2" strokeDasharray="6 4" style={{animation: 'dashFlow 4s linear infinite'}} />
-                    <circle cx="30" cy="110" r="4" fill="#f97316" />
-                    <circle cx="130" cy="100" r="4" fill="#3b82f6" />
-                    <circle cx="220" cy="60" r="4" fill="#f97316" />
-                  </svg>
-                </div>
+              <div className="flex-shrink-0">
+                <svg className="w-28 h-20" viewBox="0 0 120 80" preserveAspectRatio="xMidYMid meet">
+                  <rect x="2" y="2" width="116" height="76" rx="8" fill="none" stroke="#0f172a" strokeWidth="1" opacity="0.2" />
+                  <circle cx="20" cy="60" r="3" fill="#f97316" />
+                  <circle cx="60" cy="40" r="3" fill="#3b82f6" />
+                  <circle cx="100" cy="25" r="3" fill="#f97316" />
+                  <path d="M20 60 L60 40 L100 25" fill="none" stroke="#3b82f6" strokeWidth="1.5" />
+                </svg>
               </div>
             </div>
             <h3 className="text-lg font-semibold text-slate-900">Itinerario generato</h3>
