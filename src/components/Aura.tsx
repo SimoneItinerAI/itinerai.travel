@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MessageCircle, X, Send, Plane, Building2, Utensils, BookOpen } from 'lucide-react';
+import { X, Send, Plane, Building2, Utensils, BookOpen } from 'lucide-react';
 
 export default function Aura() {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,7 +57,7 @@ export default function Aura() {
           {isOpen ? (
             <X className="w-7 h-7 text-white relative z-10" />
           ) : (
-            <MessageCircle className="w-7 h-7 text-white relative z-10" />
+            <img src="/logo.png?v=20251113" alt="ItinerAI" className="w-8 h-8 relative z-10" />
           )}
           {!isOpen && (
             <div className="absolute top-0 right-0 w-3 h-3 bg-brand-orange rounded-full animate-pulse"></div>
@@ -71,13 +71,23 @@ export default function Aura() {
           <div className="bg-gradient-to-br from-slate-950 via-brand-navy to-slate-950 border border-brand-blue/30 rounded-3xl flex flex-col h-96">
             {/* Header */}
             <div className="bg-gradient-to-r from-brand-blue/50 to-brand-orange/50 backdrop-blur-md p-4 border-b border-brand-blue/20">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-brand-orange to-brand-blue rounded-full flex items-center justify-center">
-                  <span className="text-lg">💡</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <img src="/logo.png?v=20251113" alt="ItinerAI" className="w-10 h-10 rounded-xl ring-1 ring-brand-blue/30 bg-slate-900/40" />
+                  <div>
+                    <h3 className="text-white font-bold tracking-wide">AURA</h3>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-brand-blue/80">Assistente di viaggio</span>
+                      <span className="flex items-center gap-1 text-xs text-emerald-400">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Online
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-white font-bold">AURA</h3>
-                  <p className="text-xs text-brand-blue/80">Il tuo assistente di viaggio</p>
+                <div className="hidden sm:flex items-center gap-2">
+                  <span className="px-2 py-1 rounded-full text-xs bg-white/10 border border-white/20 text-white/80">Tech</span>
+                  <span className="px-2 py-1 rounded-full text-xs bg-white/10 border border-white/20 text-white/80">AI</span>
                 </div>
               </div>
             </div>

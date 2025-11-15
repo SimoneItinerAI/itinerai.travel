@@ -162,7 +162,10 @@ export default function HowItWorks() {
                         <div className="space-y-3">
                           <div className="grid grid-cols-1 gap-2.5">
                             <div className="relative flex items-center gap-3 rounded-xl bg-white/6 px-2.5 py-2 border border-white/10 shadow-[0_0_12px_rgba(59,130,246,0.10)]">
-                              <img loading="lazy" decoding="async" src="/step3.png" alt="giorno1" className="w-10 h-10 rounded-md object-cover ring-1 ring-white/10"/>
+                              <div className="relative w-9 h-9 rounded-md overflow-hidden ring-1 ring-white/10 bg-black/20">
+                                <img loading="lazy" decoding="async" src="/day1.png" alt="giorno1" className="w-full h-full object-cover brightness-[.95] contrast-[1.05] saturate-[1.1]" />
+                                <div className="absolute inset-0 bg-gradient-to-tr from-brand-blue/30 to-brand-orange/25 mix-blend-multiply opacity-80"></div>
+                              </div>
                               <div className="flex-1">
                                 <div className="flex items-center justify-between">
                                   <span className="text-sm font-semibold text-slate-100">Giorno 1</span>
@@ -175,7 +178,10 @@ export default function HowItWorks() {
                               </div>
                             </div>
                             <div className="relative flex items-center gap-3 rounded-xl bg-white/6 px-2.5 py-2 border border-white/10 shadow-[0_0_12px_rgba(59,130,246,0.10)]">
-                              <img loading="lazy" decoding="async" src="/step3.png" alt="giorno2" className="w-10 h-10 rounded-md object-cover ring-1 ring-white/10"/>
+                              <div className="relative w-9 h-9 rounded-md overflow-hidden ring-1 ring-white/10 bg-black/20">
+                                <img loading="lazy" decoding="async" src="/day2.png" alt="giorno2" className="w-full h-full object-cover brightness-[.95] contrast-[1.05] saturate-[1.1]" />
+                                <div className="absolute inset-0 bg-gradient-to-tr from-brand-blue/30 to-brand-orange/25 mix-blend-multiply opacity-80"></div>
+                              </div>
                               <div className="flex-1">
                                 <div className="flex items-center justify-between">
                                   <span className="text-sm font-semibold text-slate-100">Giorno 2</span>
@@ -188,7 +194,10 @@ export default function HowItWorks() {
                               </div>
                             </div>
                             <div className="relative flex items-center gap-3 rounded-xl bg-white/6 px-2.5 py-2 border border-white/10 shadow-[0_0_12px_rgba(249,115,22,0.10)]">
-                              <img loading="lazy" decoding="async" src="/step3.png" alt="giorno3" className="w-10 h-10 rounded-md object-cover ring-1 ring-white/10"/>
+                              <div className="relative w-9 h-9 rounded-md overflow-hidden ring-1 ring-white/10 bg-black/20">
+                                <img loading="lazy" decoding="async" src="/day3.png" alt="giorno3" className="w-full h-full object-cover brightness-[.95] contrast-[1.05] saturate-[1.1]" />
+                                <div className="absolute inset-0 bg-gradient-to-tr from-brand-blue/30 to-brand-orange/25 mix-blend-multiply opacity-80"></div>
+                              </div>
                               <div className="flex-1">
                                 <div className="flex items-center justify-between">
                                   <span className="text-sm font-semibold text-slate-100">Giorno 3</span>
