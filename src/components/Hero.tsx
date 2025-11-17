@@ -181,15 +181,15 @@ export default function Hero() {
         </p>
 
         <div className="max-w-xl mx-auto mb-8">
-          <div className="flex flex-col sm:flex-row gap-3 bg-white/5 backdrop-blur-md p-2 rounded-full border border-white/20 hover:border-orange-500/50 transition-all">
+          <div className="w-full flex flex-col md:flex-row gap-2 md:gap-3 bg-white/8 md:bg-white/5 backdrop-blur-md p-3 md:p-2 rounded-2xl md:rounded-full border border-white/20 md:hover:border-orange-500/50 shadow-md md:shadow-none transition-all">
             <input
               type="text"
               placeholder="Dove vuoi andare?"
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
-              className="flex-1 bg-transparent px-6 py-3 text-white placeholder-slate-400 focus:outline-none"
+              className="flex-1 bg-transparent px-4 md:px-6 py-3.5 md:py-3 text-white placeholder-slate-400 text-base focus:outline-none"
             />
-            <button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-3 rounded-full font-semibold flex items-center gap-2 transition-all hover:shadow-lg hover:shadow-orange-500/50 whitespace-nowrap">
+            <button className="w-full md:w-auto bg-gradient-to-r from-orange-500 to-orange-600 md:hover:from-orange-600 md:hover:to-orange-700 text-white px-6 md:px-8 py-3.5 md:py-3 rounded-xl md:rounded-full font-semibold flex items-center justify-center gap-2 transition-all shadow-lg md:shadow-none hover:shadow-orange-500/50 whitespace-nowrap">
               Crea Itinerario
               <ArrowRight className="w-5 h-5" />
             </button>
