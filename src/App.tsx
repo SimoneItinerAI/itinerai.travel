@@ -19,7 +19,7 @@ function App() {
   if (view === 'proposals') {
     return (
       <div className="min-h-screen bg-white">
-        <Navbar />
+        <div className="hidden md:block"><Navbar /></div>
         <Proposals destination={dest} onBack={() => setView('home')} />
         <Footer />
       </div>
