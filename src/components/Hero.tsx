@@ -5,7 +5,25 @@ export default function Hero() {
   const [destination, setDestination] = useState('');
 
   return (
-    <section className="relative min-h-screen w-full bg-slate-950 text-white overflow-hidden flex items-center justify-center">
+    <section id="hero" className="relative min-h-screen w-full bg-slate-950 text-white overflow-hidden flex items-center justify-center">
+      <style>{`
+        @media (max-width: 768px) {
+          #hero {
+            background-image: url('/backgroundmobile.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+          }
+          #hero picture { display: none; }
+          #hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+          }
+        }
+      `}</style>
       {/* Background image - supports PNG with JPG fallback */}
       <picture>
         <source srcSet="/background.png" type="image/png" />
