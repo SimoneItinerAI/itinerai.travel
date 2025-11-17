@@ -3,20 +3,20 @@ import { ArrowRight } from 'lucide-react';
 
 export default function Hero() {
   const [destination, setDestination] = useState('');
-  const bgMobileUrl = `${import.meta.env.BASE_URL}backgroundmobile.png`;
+  const bgMobileUrl = '/backgroundmobile.png';
 
   return (
-    <section id="hero" className="relative min-h-screen w-full bg-slate-950 text-white overflow-hidden flex items-center justify-center">
+    <section id="hero" className="HeroSection relative min-h-screen w-full bg-slate-950 text-white overflow-hidden flex items-center justify-center">
       <style>{`
         @media (max-width: 768px) {
-          #hero {
+          .HeroSection {
             background-image: url('${bgMobileUrl}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
           }
-          #hero picture { display: none; }
-          #hero::before {
+          .HeroSection picture { display: none; }
+          .HeroSection::before {
             content: '';
             position: absolute;
             inset: 0;
