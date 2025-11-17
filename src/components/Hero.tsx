@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react';
 
 export default function Hero() {
   const [destination, setDestination] = useState('');
+  const [suggestions, setSuggestions] = useState<Array<{title: string; bullets: string[]; icon: string}>>([]);
   const bgMobileUrl = '/backgroundmobile.png?v=20251117';
 
   return (
@@ -187,14 +188,52 @@ export default function Hero() {
               placeholder="Dove vuoi andare?"
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { const d = destination.trim(); if (!d) return; const city = d[0].toUpperCase() + d.slice(1); setSuggestions([
+                { title: `Giorno 1 · Arrivo a ${city}`, bullets: [ `Check-in e orientamento in centro`, `Passeggiata nella zona storica` ], icon: '✈️' },
+                { title: `Giorno 2 · Esplora ${city}`, bullets: [ `Museo principale e quartieri iconici`, `Caffè tipico e scorci fotografici` ], icon: '📍' },
+                { title: `Giorno 3 · Sapori di ${city}`, bullets: [ `Mercato locale o tour gastronomico`, `Cena tipica con piatto regionale` ], icon: '🍽️' },
+              ]); } }}
               className="flex-1 bg-transparent px-4 md:px-6 py-3.5 md:py-3 text-white placeholder-slate-400 text-base focus:outline-none"
             />
-            <button className="w-full md:w-auto bg-gradient-to-r from-orange-500 to-orange-600 md:hover:from-orange-600 md:hover:to-orange-700 text-white px-6 md:px-8 py-3.5 md:py-3 rounded-xl md:rounded-full font-semibold flex items-center justify-center gap-2 transition-all shadow-lg md:shadow-none hover:shadow-orange-500/50 whitespace-nowrap">
+            <button onClick={() => { const d = destination.trim(); if (!d) return; const city = d[0].toUpperCase() + d.slice(1); setSuggestions([
+              { title: `Giorno 1 · Arrivo a ${city}`, bullets: [ `Check-in e orientamento in centro`, `Passeggiata nella zona storica` ], icon: '✈️' },
+              { title: `Giorno 2 · Esplora ${city}`, bullets: [ `Museo principale e quartieri iconici`, `Caffè tipico e scorci fotografici` ], icon: '📍' },
+              { title: `Giorno 3 · Sapori di ${city}`, bullets: [ `Mercato locale o tour gastronomico`, `Cena tipica con piatto regionale` ], icon: '🍽️' },
+            ]); }} className="w-full md:w-auto bg-gradient-to-r from-orange-500 to-orange-600 md:hover:from-orange-600 md:hover:to-orange-700 text-white px-6 md:px-8 py-3.5 md:py-3 rounded-xl md:rounded-full font-semibold flex items-center justify-center gap-2 transition-all shadow-lg md:shadow-none hover:shadow-orange-500/50 whitespace-nowrap">
               Crea Itinerario
               <ArrowRight className="w-5 h-5" />
             </button>
           </div>
         </div>
+
+        {suggestions.length > 0 && (
+          <div className="md:hidden px-6">
+            <div className="space-y-3 rounded-2xl border border-white/15 bg-white/5 backdrop-blur-md p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-white/80">Anteprima per {destination.trim()[0]?.toUpperCase()}{destination.trim().slice(1)}</span>
+                <button onClick={() => setSuggestions([])} className="text-xs text-white/60 underline">Reset</button>
+              </div>
+              <div className="grid grid-cols-1 gap-2.5">
+                {suggestions.map((s, i) => (
+                  <div key={i} className="relative flex items-center gap-3 rounded-xl bg-white/6 px-2.5 py-2 border border-white/10">
+                    <div className="w-9 h-9 rounded-md flex items-center justify-center bg-gradient-to-tr from-brand-orange to-brand-blue text-white/90">
+                      <span className="text-sm">{s.icon}</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-semibold text-slate-100">{s.title}</span>
+                        <span className="text-xs text-white/60">{i+1}/3</span>
+                      </div>
+                      <ul className="mt-0.5 text-xs text-slate-300 space-y-0.5 list-disc list-inside">
+                        {s.bullets.map((b, j) => (<li key={j}>{b}</li>))}
+                      </ul>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         <p className="text-slate-400 text-sm">
           Nessuna registrazione • Creato in pochi secondi • Sempre aggiornato
