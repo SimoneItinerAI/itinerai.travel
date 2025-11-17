@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import Hero from './components/Hero';
+import Proposals from './components/Proposals';
 import Navbar from './components/Navbar';
 import WhatIsItinerAI from './components/WhatIsItinerAI';
 import HowItWorks from './components/HowItWorks';
@@ -11,10 +13,23 @@ import Footer from './components/Footer';
 import Aura from './components/Aura';
 
 function App() {
+  const [view, setView] = useState<'home' | 'proposals'>('home');
+  const [dest, setDest] = useState('');
+
+  if (view === 'proposals') {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navbar />
+        <Proposals destination={dest} onBack={() => setView('home')} />
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      <Hero />
+      <Hero onCreate={(d) => { setDest(d); setView('proposals'); }} />
       <WhatIsItinerAI />
       <section id="how" className="scroll-mt-24">
         <HowItWorks />
