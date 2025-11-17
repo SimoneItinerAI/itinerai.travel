@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react';
 
 export default function Hero() {
   const [destination, setDestination] = useState('');
-  const bgMobileUrl = '/backgroundmobile.png';
+  const bgMobileUrl = '/backgroundmobile.png?v=20251117';
 
   return (
     <section id="hero" className="HeroSection relative min-h-screen w-full bg-slate-950 text-white overflow-hidden flex items-center justify-center">
