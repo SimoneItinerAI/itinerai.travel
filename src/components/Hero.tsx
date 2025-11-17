@@ -21,8 +21,12 @@ export default function Hero() {
             position: absolute;
             inset: 0;
             pointer-events: none;
-            backdrop-filter: blur(4px);
-            filter: blur(0);
+            background-image: url('${bgMobileUrl}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(3px);
+            z-index: 0;
           }
         }
       `}</style>
