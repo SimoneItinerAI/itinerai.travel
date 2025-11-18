@@ -138,6 +138,23 @@ export default function WhatIsItinerAI() {
                 <div className="absolute left-0 top-0 bottom-0 w-[2px] opacity-40" style={{ background: 'linear-gradient(to bottom, rgba(59,130,246,0.65), rgba(255,138,61,0.55))', animation: 'neonPulse 0.35s ease-out' }}></div>
               </div>
               <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(120% 80% at 50% 0%, rgba(255,138,61,.08), rgba(59,130,246,.06) 50%, transparent 70%)', transform: enableTilt ? `translateX(${tiltY * 2}px) translateY(${tiltX * -2}px)` : undefined }}></div>
+              <style>{`@keyframes dashMoveCard { 0%{ stroke-dashoffset: 0 } 100%{ stroke-dashoffset: -400 }`}</style>
+              <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#FF8A3D" stopOpacity="0.8" />
+                    <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.75" />
+                  </linearGradient>
+                  <filter id="cardGlow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="1.4" result="bl" />
+                    <feMerge>
+                      <feMergeNode in="bl" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+                <rect x="1.5" y="1.5" width="97" height="97" rx="18" ry="18" fill="none" stroke="url(#cardGrad)" strokeWidth="1.4" strokeLinecap="round" filter="url(#cardGlow)" style={{ strokeDasharray: '48 352', animation: 'dashMoveCard 3s linear infinite', opacity: 0.85 }} />
+              </svg>
               {itinerary.map((day, d) => (
                 <div
                   key={d}
