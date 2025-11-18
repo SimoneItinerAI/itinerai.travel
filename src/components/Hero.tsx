@@ -3,25 +3,13 @@ import { ArrowRight } from 'lucide-react';
 
 export default function Hero({ onCreate }: { onCreate?: (dest: string) => void }) {
   const [destination, setDestination] = useState('');
-  const bgMobileUrl = '/backgroundmobile.png?v=20251117';
+  
 
   return (
     <section id="hero" className="HeroSection relative min-h-screen w-full bg-slate-950 text-white overflow-hidden flex items-center justify-center">
-      <style>{`
-        @media (max-width: 768px) {
-          .HeroSection {
-            background-image: url('${bgMobileUrl}');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-          }
-          .HeroSection picture { display: none; }
-          .HeroSection .hero-pattern { display: none; }
-          .HeroSection::before { background: none; filter: none; }
-        }
-      `}</style>
       {/* Background image - supports PNG with JPG fallback */}
       <picture>
+        <source media="(max-width: 768px)" srcSet="/backgroundmobile.png?v=20251117" type="image/png" />
         <source srcSet="/background.png" type="image/png" />
         <img
           src="/background.jpg"
@@ -31,7 +19,7 @@ export default function Hero({ onCreate }: { onCreate?: (dest: string) => void }
       </picture>
 
       {/* Animated SVG elements */}
-      <div className="hero-pattern absolute left-0 right-0 bottom-0 top-20 opacity-40 pointer-events-none">
+      <div className="hero-pattern absolute left-0 right-0 bottom-0 top-20 opacity-40 pointer-events-none hidden sm:block">
         <svg className="w-full h-full" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
           <defs>
             <filter id="glow-hero" x="-50%" y="-50%" width="200%" height="200%">
