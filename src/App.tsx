@@ -11,6 +11,7 @@ import Technology from './components/Technology';
 import FinalCTA from './components/FinalCTA';
 import Footer from './components/Footer';
 import Aura from './components/Aura';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 function App() {
   const [view, setView] = useState<'home' | 'proposals'>('home');
@@ -22,6 +23,7 @@ function App() {
         <div className="hidden md:block"><Navbar /></div>
         <Proposals destination={dest} onBack={() => setView('home')} />
         <Footer />
+        <SpeedInsights />
       </div>
     );
   }
@@ -47,6 +49,7 @@ function App() {
         <Footer />
       </section>
       <Aura />
+      <SpeedInsights />
     </div>
   );
 }
