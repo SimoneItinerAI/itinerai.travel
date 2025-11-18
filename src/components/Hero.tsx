@@ -28,7 +28,7 @@ export default function Hero({ onCreate }: { onCreate?: (dest: string) => void }
       <picture>
         <source srcSet="/background.png" type="image/png" />
         <img
-          src="/background.jpg"
+          src="/background.png"
           alt=""
           className="absolute inset-0 w-full h-full object-cover object-[center_35%] sm:object-center"
         />
