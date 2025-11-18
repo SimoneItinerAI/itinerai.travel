@@ -9,11 +9,18 @@ export default function Hero({ onCreate }: { onCreate?: (dest: string) => void }
     <section id="hero" className="HeroSection relative min-h-screen w-full bg-slate-950 text-white overflow-hidden flex items-center justify-center">
       <style>{`
         @media (max-width: 768px) {
-          .HeroSection {
+          .HeroSection { position: relative; }
+          .HeroSection::before {
+            content: '';
+            position: absolute;
+            inset: 0;
             background-image: url('/backgroundmobile.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            filter: blur(4px);
+            transform: scale(1.02);
+            z-index: 0;
           }
           .HeroSection picture { display: none; }
         }

@@ -23,6 +23,10 @@ export default function WhatIsItinerAI() {
   const [typedCount, setTypedCount] = useState(0);
   const [inView, setInView] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
+  const [pulseTick, setPulseTick] = useState(0);
+  const [tiltX, setTiltX] = useState(0);
+  const [tiltY, setTiltY] = useState(0);
+  const [enableTilt, setEnableTilt] = useState(true);
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -30,6 +34,12 @@ export default function WhatIsItinerAI() {
     const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.25 });
     io.observe(el);
     return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      setEnableTilt(window.matchMedia('(pointer: fine)').matches);
+    }
   }, []);
 
   useEffect(() => {
@@ -60,23 +70,27 @@ export default function WhatIsItinerAI() {
             const next = c + 1;
             if (next >= line.length) {
               window.clearInterval(iv);
-              setShownLines(prev => {
-                const copy = [...prev];
-                copy[d] = lineIndex + 1;
-                return copy;
-              });
-              lineIndex += 1;
-              if (lineIndex < total) {
-                const to = window.setTimeout(typeLine, 220);
-                timers.push(to);
-              } else if (d + 1 < itineraryRef.current.length) {
-                const to = window.setTimeout(() => revealDay(d + 1), 480);
-                timers.push(to);
-              }
+              const cursorHold = window.setTimeout(() => {
+                setShownLines(prev => {
+                  const copy = [...prev];
+                  copy[d] = lineIndex + 1;
+                  return copy;
+                });
+                setPulseTick(t => t + 1);
+                lineIndex += 1;
+                if (lineIndex < total) {
+                  const to = window.setTimeout(typeLine, 140);
+                  timers.push(to);
+                } else if (d + 1 < itineraryRef.current.length) {
+                  const to = window.setTimeout(() => revealDay(d + 1), 320);
+                  timers.push(to);
+                }
+              }, 200);
+              timers.push(cursorHold);
             }
             return next;
           });
-        }, 160);
+        }, 14);
         intervals.push(iv);
       };
       typeLine();
@@ -96,14 +110,34 @@ export default function WhatIsItinerAI() {
     <section ref={sectionRef} className="py-24 px-6 bg-gradient-to-b from-white to-slate-50">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="relative">
+          <div className="relative" style={{ perspective: '1200px' }}>
             <style>{`
               @keyframes fadeUpDay { 0%{opacity:0; transform:translateY(6px)} 100%{opacity:1; transform:translateY(0)} }
               @keyframes fadeLine { 0%{opacity:0; transform:translateY(4px)} 100%{opacity:1; transform:translateY(0)} }
               @keyframes blink { 0%,40%{opacity:1} 50%,100%{opacity:0} }
               .title-glow { text-shadow: 0 0 10px rgba(255,138,61,0.25); }
+              @keyframes neonPulse { 0%{opacity:.35; box-shadow:0 0 0 rgba(59,130,246,0)} 50%{opacity:.75; box-shadow:0 0 12px rgba(59,130,246,0.35)} 100%{opacity:.35; box-shadow:0 0 0 rgba(59,130,246,0)} }
             `}</style>
-            <div className="relative bg-brand-night rounded-3xl p-8 shadow-md border border-white/10 min-h-[24rem]">
+            <div
+              className="relative bg-brand-night rounded-3xl p-8 shadow-md border border-white/10 min-h-[24rem] overflow-hidden"
+              onMouseMove={(e) => {
+                if (!enableTilt) return;
+                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const cx = rect.width / 2;
+                const cy = rect.height / 2;
+                const max = 6;
+                setTiltY(((x - cx) / cx) * max);
+                setTiltX(-((y - cy) / cy) * max);
+              }}
+              onMouseLeave={() => { if (!enableTilt) return; setTiltX(0); setTiltY(0); }}
+              style={{ transform: enableTilt ? `rotateX(${tiltX}deg) rotateY(${tiltY}deg)` : undefined, transition: 'transform 300ms ease', willChange: 'transform' }}
+            >
+              <div key={pulseTick} className="absolute left-0 top-0 bottom-0 w-[2px]">
+                <div className="absolute left-0 top-0 bottom-0 w-[2px] opacity-40" style={{ background: 'linear-gradient(to bottom, rgba(59,130,246,0.65), rgba(255,138,61,0.55))', animation: 'neonPulse 0.35s ease-out' }}></div>
+              </div>
+              <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(120% 80% at 50% 0%, rgba(255,138,61,.08), rgba(59,130,246,.06) 50%, transparent 70%)', transform: enableTilt ? `translateX(${tiltY * 2}px) translateY(${tiltX * -2}px)` : undefined }}></div>
               {itinerary.map((day, d) => (
                 <div
                   key={d}
@@ -111,6 +145,7 @@ export default function WhatIsItinerAI() {
                   style={visibleDays >= d + 1 ? { animation: 'fadeUpDay 0.34s ease-out forwards' } : undefined}
                 >
                   <h3 className="text-slate-100 font-semibold title-glow">{day.title}</h3>
+                  <div className="mt-1 h-[2px] w-24 bg-gradient-to-r from-brand-orange/60 to-brand-blue/60 blur-[1px] opacity-60"></div>
                   <ul className="mt-2 space-y-1 text-slate-300 text-sm leading-relaxed">
                     {day.lines.slice(0, shownLines[d] ?? 0).map((line, j) => (
                       <li key={`${d}-${j}`} style={{ animation: 'fadeLine 0.32s ease-out forwards' }}>{line}</li>
@@ -129,9 +164,13 @@ export default function WhatIsItinerAI() {
 
           {/* Right: Text content */}
         <div>
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-8">
+          <style>{`
+            @keyframes badgePulse { 0%{transform:scale(1); box-shadow:0 0 0 rgba(0,0,0,0)} 50%{transform:scale(1.08); box-shadow:0 0 10px rgba(59,130,246,0.15)} 100%{transform:scale(1); box-shadow:0 0 0 rgba(0,0,0,0)} }
+          `}</style>
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-2">
           Il tuo viaggio, <span className="text-transparent bg-gradient-to-r from-brand-orange to-brand-blue bg-clip-text">creato in tempo reale</span>
           </h2>
+          <div className="h-[2px] w-28 bg-gradient-to-r from-brand-orange/60 to-brand-blue/60 blur-[0.5px] mb-6"></div>
 
             <p className="text-lg text-slate-600 leading-relaxed mb-6">
               Dalla scelta del volo alla prenotazione dell'hotel, fino ai ristoranti locali e ai luoghi imperdibili — ItinerAI analizza milioni di dati e costruisce per te l'esperienza perfetta.
@@ -141,13 +180,13 @@ export default function WhatIsItinerAI() {
               Ogni itinerario è unico, come il tuo modo di viaggiare.
             </p>
 
-            <div className="mt-8 flex gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 bg-brand-orange rounded-full"></div>
+            <div className="mt-8 flex gap-3 items-center">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-full border border-slate-200 bg-white shadow-sm transition-transform duration-200 hover:-translate-y-[1px]">
+                <div className="w-3 h-3 rounded-full" style={{ background: 'linear-gradient(135deg, #FF8A3D, #FDAF6E)', animation: 'badgePulse 1.6s ease-in-out infinite' }}></div>
                 <span className="text-slate-700 font-medium">IA generativa</span>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 bg-brand-blue rounded-full"></div>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-full border border-slate-200 bg-white shadow-sm transition-transform duration-200 hover:-translate-y-[1px]">
+                <div className="w-3 h-3 rounded-full" style={{ background: 'linear-gradient(135deg, #3B82F6, #6AA7FA)', animation: 'badgePulse 1.6s ease-in-out infinite' }}></div>
                 <span className="text-slate-700 font-medium">Personalizzato</span>
               </div>
             </div>
