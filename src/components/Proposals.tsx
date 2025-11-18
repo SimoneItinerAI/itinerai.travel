@@ -2,11 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { geocodeCity as geocodeCityOSM } from '../services/nominatim';
 import { fetchAttractions, type Attraction } from '../services/overpass';
 
+type Wiki = { title: string; description?: string; extract?: string; thumbnailUrl?: string; pageUrl?: string };
+type EnrichedAttraction = Attraction & { wiki?: Wiki };
+
 export default function Proposals({ destination, onBack }: { destination: string; onBack?: () => void }) {
   const city = useMemo(() => (destination ? destination[0].toUpperCase() + destination.slice(1) : ''), [destination]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [pois, setPois] = useState<Attraction[]>([]);
+  const [pois, setPois] = useState<EnrichedAttraction[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -16,12 +19,70 @@ export default function Proposals({ destination, onBack }: { destination: string
       if (!city) return;
       setLoading(true);
       try {
-        const geo = await geocodeCityOSM(city);
-        if (!geo) {
-          if (!cancelled) setError('Impossibile localizzare la città.');
+        const useBackend = import.meta.env.PROD;
+        if (useBackend) {
+          const params = new URLSearchParams({ city, radius: '10000', limit: '12' });
+          const r = await fetch(`/api/attractions?${params.toString()}`);
+          if (!r.ok) throw new Error('api error');
+          const data = await r.json();
+          if (!cancelled) setPois(data as EnrichedAttraction[]);
         } else {
-          const list = await fetchAttractions(geo.lat, geo.lon, 10000, 12);
-          if (!cancelled) setPois(list);
+          const geo = await geocodeCityOSM(city);
+          if (!geo) {
+            if (!cancelled) setError('Impossibile localizzare la città.');
+          } else {
+            const list = await fetchAttractions(geo.lat, geo.lon, 10000, 12);
+            const lang = 'it';
+            const enriched: EnrichedAttraction[] = await Promise.all(
+              list.map(async (p) => {
+                let wiki: Wiki | undefined = undefined;
+                try {
+                  const titleEnc = encodeURIComponent(p.name);
+                  const sRes = await fetch(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${titleEnc}`);
+                  if (sRes.ok) {
+                    const s = await sRes.json();
+                    wiki = {
+                      title: s?.title,
+                      description: s?.description,
+                      extract: s?.extract,
+                      thumbnailUrl: s?.thumbnail?.source,
+                      pageUrl: s?.content_urls?.desktop?.page,
+                    };
+                  } else if (p.lat && p.lon) {
+                    const params = new URLSearchParams({
+                      action: 'query',
+                      format: 'json',
+                      origin: '*',
+                      list: 'geosearch',
+                      gscoord: `${p.lat}|${p.lon}`,
+                      gsradius: '1000',
+                      gslimit: '1',
+                    });
+                    const gsRes = await fetch(`https://${lang}.wikipedia.org/w/api.php?${params.toString()}`);
+                    if (gsRes.ok) {
+                      const gs = await gsRes.json();
+                      const t = gs?.query?.geosearch?.[0]?.title;
+                      if (t) {
+                        const s2Res = await fetch(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(t)}`);
+                        if (s2Res.ok) {
+                          const s2 = await s2Res.json();
+                          wiki = {
+                            title: s2?.title,
+                            description: s2?.description,
+                            extract: s2?.extract,
+                            thumbnailUrl: s2?.thumbnail?.source,
+                            pageUrl: s2?.content_urls?.desktop?.page,
+                          };
+                        }
+                      }
+                    }
+                  }
+                } catch {}
+                return { ...p, wiki } as EnrichedAttraction;
+              })
+            );
+            if (!cancelled) setPois(enriched);
+          }
         }
       } catch (e: any) {
         if (!cancelled) setError('Impossibile caricare i luoghi da vedere.');
@@ -73,7 +134,7 @@ export default function Proposals({ destination, onBack }: { destination: string
           <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div className="p-4 border-b border-slate-100">
               <h2 className="text-xl font-semibold">Luoghi da vedere</h2>
-              <p className="text-xs text-slate-500">OpenTripMap</p>
+              <p className="text-xs text-slate-500">OpenStreetMap + Wikipedia</p>
             </div>
             <div className="p-4 space-y-3">
               {loading ? (
@@ -84,9 +145,21 @@ export default function Proposals({ destination, onBack }: { destination: string
                 <p className="text-sm text-slate-600">Nessun luogo disponibile.</p>
               ) : (
                 pois.map((p) => (
-                  <div key={p.id} className="space-y-1">
-                    <p className="text-sm font-medium">{p.name}</p>
-                  </div>
+                  <a key={p.id} href={p.wiki?.pageUrl ?? '#'} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50">
+                    {p.wiki?.thumbnailUrl ? (
+                      <img src={p.wiki.thumbnailUrl} alt={p.wiki?.title ?? p.name} className="w-14 h-14 rounded-lg object-cover border border-slate-200" />
+                    ) : (
+                      <div className="w-14 h-14 rounded-lg bg-slate-100 border border-slate-200" />
+                    )}
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{p.name}</p>
+                      {p.wiki?.description ? (
+                        <p className="text-xs text-slate-600 line-clamp-2">{p.wiki.description}</p>
+                      ) : p.wiki?.extract ? (
+                        <p className="text-xs text-slate-600 line-clamp-2">{p.wiki.extract}</p>
+                      ) : null}
+                    </div>
+                  </a>
                 ))
               )}
             </div>

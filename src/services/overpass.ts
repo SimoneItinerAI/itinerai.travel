@@ -1,4 +1,4 @@
-export type Attraction = { id: string; name: string };
+export type Attraction = { id: string; name: string; lat?: number; lon?: number };
 
 export async function fetchAttractions(lat: number, lon: number, radius = 10000, limit = 12): Promise<Attraction[]> {
   const q = `
@@ -14,6 +14,13 @@ export async function fetchAttractions(lat: number, lon: number, radius = 10000,
   if (!res.ok) return [];
   const data = await res.json();
   const elements = Array.isArray(data?.elements) ? data.elements : [];
-  const list = elements.map((e: any) => ({ id: String(e.id), name: e?.tags?.name })).filter((a: Attraction) => a.name);
+  const list = elements
+    .map((e: any) => ({
+      id: String(e.id),
+      name: e?.tags?.name,
+      lat: e?.lat ?? e?.center?.lat,
+      lon: e?.lon ?? e?.center?.lon,
+    }))
+    .filter((a: Attraction) => a.name);
   return list.slice(0, limit);
 }
