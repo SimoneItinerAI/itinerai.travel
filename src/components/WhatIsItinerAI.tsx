@@ -1,78 +1,137 @@
-import { useEffect, useMemo, useState } from 'react';
-import { PenLine } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function WhatIsItinerAI() {
-  const scheduleLines = useMemo(() => [
-    'Roma – Itinerario',
-    'Giorno 1: Arrivo e Centro Storico',
-    '• Check-in Hotel Artemide (4★)',
-    '• Passeggiata Colosseo e Fori Romani',
-    'Giorno 2: Musei e Vaticano',
-    '• Galleria Borghese – mattina',
-    '• Musei Vaticani e Basilica di San Pietro',
-    'Giorno 3: Trastevere e sapori locali',
-    '• Pranzo da Armando al Pantheon',
-    '• Tramonto al Gianicolo'
-  ], []);
+  const itinerary = [
+    {
+      title: 'Giorno 1 — Colosseo e Centro Storico',
+      lines: ['Arrivo e check-in', 'Passeggiata serale nel centro'],
+    },
+    {
+      title: 'Giorno 2 — Musei Vaticani e San Pietro',
+      lines: ['Tour culturale', 'Pranzo tipico'],
+    },
+    {
+      title: 'Giorno 3 — Trastevere e Tramonto al Gianicolo',
+      lines: ['Passeggiata nei vicoli', 'Cena tradizionale'],
+    },
+  ];
 
-  const [lineIndex, setLineIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
-  const [displayed, setDisplayed] = useState<string[]>(Array(scheduleLines.length).fill(''));
+  const [visibleDays, setVisibleDays] = useState(0);
+  const [shownLines, setShownLines] = useState<number[]>(Array(itinerary.length).fill(0));
+  const itineraryRef = useRef(itinerary);
+  const [currentDay, setCurrentDay] = useState(0);
+  const [typedCount, setTypedCount] = useState(0);
+  const [inView, setInView] = useState(false);
+  const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const current = scheduleLines[lineIndex];
-      if (!current) {
-        clearInterval(interval);
-        return;
-      }
-      const nextChar = charIndex + 1;
-      const nextText = current.slice(0, nextChar);
-      setDisplayed(prev => {
-        const copy = [...prev];
-        copy[lineIndex] = nextText;
-        return copy;
-      });
-      setCharIndex(nextChar);
-      if (nextChar >= current.length) {
-        setLineIndex(i => i + 1);
-        setCharIndex(0);
-      }
-    }, 35);
-    return () => clearInterval(interval);
-  }, [charIndex, lineIndex, scheduleLines]);
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.25 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    const timers: number[] = [];
+    const intervals: number[] = [];
+    if (!inView) {
+      setVisibleDays(0);
+      setShownLines(Array(itineraryRef.current.length).fill(0));
+      setTypedCount(0);
+      setCurrentDay(0);
+      return () => {};
+    }
+
+    const revealDay = (d: number) => {
+      if (!mounted) return;
+      setCurrentDay(d);
+      setVisibleDays(v => Math.max(v, d + 1));
+      const total = itineraryRef.current[d].lines.length;
+      let lineIndex = 0;
+      const typeLine = () => {
+        if (!mounted) return;
+        const line = itineraryRef.current[d].lines[lineIndex] ?? '';
+        setTypedCount(0);
+        const iv = window.setInterval(() => {
+          if (!mounted) { window.clearInterval(iv); return; }
+          setTypedCount(c => {
+            const next = c + 1;
+            if (next >= line.length) {
+              window.clearInterval(iv);
+              setShownLines(prev => {
+                const copy = [...prev];
+                copy[d] = lineIndex + 1;
+                return copy;
+              });
+              lineIndex += 1;
+              if (lineIndex < total) {
+                const to = window.setTimeout(typeLine, 220);
+                timers.push(to);
+              } else if (d + 1 < itineraryRef.current.length) {
+                const to = window.setTimeout(() => revealDay(d + 1), 480);
+                timers.push(to);
+              }
+            }
+            return next;
+          });
+        }, 160);
+        intervals.push(iv);
+      };
+      typeLine();
+    };
+
+    const start = window.setTimeout(() => revealDay(0), 200);
+    timers.push(start);
+
+    return () => {
+      mounted = false;
+      timers.forEach(t => window.clearTimeout(t));
+      intervals.forEach(i => window.clearInterval(i));
+    };
+  }, [inView]);
+
   return (
-    <section className="py-24 px-6 bg-gradient-to-b from-white to-slate-50">
+    <section ref={sectionRef} className="py-24 px-6 bg-gradient-to-b from-white to-slate-50">
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="relative">
-            <div className="relative bg-gradient-to-br from-slate-100 to-slate-200 rounded-3xl p-6 shadow-2xl border border-slate-300 h-96 flex flex-col overflow-hidden -rotate-2">
-              <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'repeating-linear-gradient(#e2e8f0 0 1px, transparent 1px 28px)' }}></div>
-              <div className="relative z-10 flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 rounded-full bg-brand-orange/20 border border-brand-orange/40 flex items-center justify-center text-brand-orange">
-                  <PenLine className="w-4 h-4" />
+            <style>{`
+              @keyframes fadeUpDay { 0%{opacity:0; transform:translateY(6px)} 100%{opacity:1; transform:translateY(0)} }
+              @keyframes fadeLine { 0%{opacity:0; transform:translateY(4px)} 100%{opacity:1; transform:translateY(0)} }
+              @keyframes blink { 0%,40%{opacity:1} 50%,100%{opacity:0} }
+              .title-glow { text-shadow: 0 0 10px rgba(255,138,61,0.25); }
+            `}</style>
+            <div className="relative bg-brand-night rounded-3xl p-8 shadow-md border border-white/10 min-h-[24rem]">
+              {itinerary.map((day, d) => (
+                <div
+                  key={d}
+                  className={`transition-all duration-[340ms] ${visibleDays >= d + 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'} mb-6`}
+                  style={visibleDays >= d + 1 ? { animation: 'fadeUpDay 0.34s ease-out forwards' } : undefined}
+                >
+                  <h3 className="text-slate-100 font-semibold title-glow">{day.title}</h3>
+                  <ul className="mt-2 space-y-1 text-slate-300 text-sm leading-relaxed">
+                    {day.lines.slice(0, shownLines[d] ?? 0).map((line, j) => (
+                      <li key={`${d}-${j}`} style={{ animation: 'fadeLine 0.32s ease-out forwards' }}>{line}</li>
+                    ))}
+                    {currentDay === d && (shownLines[d] ?? 0) < day.lines.length ? (
+                      <li key={`${d}-typing`}>
+                        {day.lines[shownLines[d] ?? 0].slice(0, typedCount)}
+                        <span style={{ animation: 'blink 1s step-end infinite' }} className="inline-block w-[1ch]">|</span>
+                      </li>
+                    ) : null}
+                  </ul>
                 </div>
-                <span className="text-slate-700 text-sm">Roma – Appunti di viaggio</span>
-              </div>
-              <div className="relative z-10 flex-1 overflow-y-auto">
-                {displayed.map((line, idx) => (
-                  <p
-                    key={idx}
-                    className="text-brand-orange text-sm tracking-wide"
-                    style={{ fontFamily: 'ui-script, "Segoe Script", "Comic Sans MS", cursive' }}
-                  >
-                    {line}
-                  </p>
-                ))}
-              </div>
+              ))}
             </div>
           </div>
 
           {/* Right: Text content */}
-          <div>
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-8">
-              Il tuo viaggio, <span className="text-transparent bg-gradient-to-r from-brand-orange to-brand-blue bg-clip-text">creato in tempo reale</span>
-            </h2>
+        <div>
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-8">
+          Il tuo viaggio, <span className="text-transparent bg-gradient-to-r from-brand-orange to-brand-blue bg-clip-text">creato in tempo reale</span>
+          </h2>
 
             <p className="text-lg text-slate-600 leading-relaxed mb-6">
               Dalla scelta del volo alla prenotazione dell'hotel, fino ai ristoranti locali e ai luoghi imperdibili — ItinerAI analizza milioni di dati e costruisce per te l'esperienza perfetta.
