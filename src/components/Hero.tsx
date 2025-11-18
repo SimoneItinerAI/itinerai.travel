@@ -9,7 +9,7 @@ export default function Hero({ onCreate }: { onCreate?: (dest: string) => void }
     <section id="hero" className="HeroSection relative min-h-screen w-full bg-slate-950 text-white overflow-hidden flex items-center justify-center">
       {/* Background image - supports PNG with JPG fallback */}
       <picture>
-        <source media="(max-width: 768px)" srcSet="/backgroundmobile.png?v=20251117" type="image/png" />
+        <source media="(max-width: 820px)" srcSet="/backgroundmobile.png?v=20251117" type="image/png" />
         <source srcSet="/background.png" type="image/png" />
         <img
           src="/background.jpg"
