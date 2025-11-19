@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
+import TravelDateSelector from './TravelDateSelector';
 
 import { type ItineraryParams } from '../utils/itinerary';
 
@@ -8,6 +9,11 @@ export default function DemoTryIt({ onStart }: { onStart?: (p: ItineraryParams) 
   const [inView, setInView] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
   const [focused, setFocused] = useState(false);
+  const [travelDates] = useState({
+    startDate: '',
+    endDate: '',
+    days: 3
+  });
 
   const examples = [
     '3 giorni a Lisbona',
@@ -68,9 +74,15 @@ export default function DemoTryIt({ onStart }: { onStart?: (p: ItineraryParams) 
   const handleDemo = (example: string) => {
     setDemo(example);
     const m = example.match(/(\d+)\s+giorni?\s+a\s+(.*)/i);
-    const days = m && m[1] ? parseInt(m[1]) : 3;
+    const days = m && m[1] ? parseInt(m[1]) : travelDates.days;
     const destination = m && m[2] ? m[2] : (example || 'Roma');
-    const p: ItineraryParams = { destination, days: isNaN(days) ? 3 : days, people: 2 };
+    const p: ItineraryParams = { 
+      destination, 
+      days: isNaN(days) ? travelDates.days : days, 
+      people: 2,
+      startDate: travelDates.startDate,
+      endDate: travelDates.endDate
+    };
     onStart?.(p);
   };
 
@@ -115,28 +127,34 @@ export default function DemoTryIt({ onStart }: { onStart?: (p: ItineraryParams) 
           </svg>
           <div className="absolute top-2 left-2 w-6 h-[2px] bg-gradient-to-r from-brand-orange/70 to-transparent blur-[0.5px] opacity-70 pointer-events-none"></div>
           <div className="absolute top-2 left-2 h-6 w-[2px] bg-gradient-to-b from-brand-blue/70 to-transparent blur-[0.5px] opacity-70 pointer-events-none"></div>
-          <div className="flex flex-col sm:flex-row gap-3 mb-6">
-            <input
-              type="text"
-              placeholder="Esempio: 3 giorni a Roma o Viaggio gastronomico..."
-              value={demo}
-              onChange={(e) => setDemo(e.target.value)}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-              onKeyDown={(e) => { if (e.key === 'Enter') handleDemo(demo || examples[0]); }}
-              className="flex-1 bg-white/10 border border-white/20 rounded-full px-6 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-brand-orange"
-            />
-            <button
-              onClick={() => handleDemo(demo || examples[0])}
-              className="bg-gradient-to-r from-brand-orange to-brand-orangelight hover:from-brand-orangelight hover:to-brand-orange text-white px-8 py-3 rounded-full font-semibold transition-all hover:shadow-lg hover:shadow-brand-orange/50 flex items-center gap-2 whitespace-nowrap"
-            >
-              Genera
-              <ArrowRight className="w-5 h-5" />
-            </button>
+          
+          {/* Travel Date Selector */}
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="text"
+                placeholder="Esempio: 3 giorni a Roma o Viaggio gastronomico..."
+                value={demo}
+                onChange={(e) => setDemo(e.target.value)}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleDemo(demo || examples[0]); }}
+                className="flex-1 bg-white/10 border border-white/20 rounded-full px-6 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-brand-orange"
+              />
+              <button
+                onClick={() => handleDemo(demo || examples[0])}
+                className="bg-gradient-to-r from-brand-orange to-brand-orangelight hover:from-brand-orangelight hover:to-brand-orange text-white px-8 py-3 rounded-full font-semibold transition-all hover:shadow-lg hover:shadow-brand-orange/50 flex items-center gap-2 whitespace-nowrap"
+              >
+                Genera
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Travel Date Selector */}
+            <div className="flex justify-center">
+              <TravelDateSelector />
+            </div>
           </div>
-          
-
-          
         </div>
 
         {/* Quick examples */}
