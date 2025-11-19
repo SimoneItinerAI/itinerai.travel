@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 
-export default function DemoTryIt() {
+import { type ItineraryParams } from '../utils/itinerary';
+
+export default function DemoTryIt({ onStart }: { onStart?: (p: ItineraryParams) => void }) {
   const [demo, setDemo] = useState('');
   const [inView, setInView] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -65,6 +67,11 @@ export default function DemoTryIt() {
 
   const handleDemo = (example: string) => {
     setDemo(example);
+    const m = example.match(/(\d+)\s+giorni?\s+a\s+(.*)/i);
+    const days = m && m[1] ? parseInt(m[1]) : 3;
+    const destination = m && m[2] ? m[2] : (example || 'Roma');
+    const p: ItineraryParams = { destination, days: isNaN(days) ? 3 : days, people: 2 };
+    onStart?.(p);
   };
 
   return (

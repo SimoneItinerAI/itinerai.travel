@@ -1,6 +1,8 @@
 import { Rocket } from 'lucide-react';
 
-export default function FinalCTA() {
+import { type ItineraryParams } from '../utils/itinerary';
+
+export default function FinalCTA({ onStart }: { onStart?: (p: ItineraryParams) => void }) {
   return (
     <section className="py-32 px-6 bg-gradient-to-br from-slate-950 via-brand-navy to-slate-950 text-white relative overflow-hidden">
       <div className="absolute inset-0 opacity-30">
@@ -39,7 +41,7 @@ export default function FinalCTA() {
           Crea il tuo itinerario perfetto in pochi secondi, senza stress e senza compromessi.
         </p>
 
-        <button className="group bg-gradient-to-r from-brand-orange to-brand-orangelight hover:from-brand-orangelight hover:to-brand-orange text-white px-10 py-5 rounded-full text-xl font-bold hover:shadow-2xl hover:shadow-brand-orange/50 transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-3">
+        <button onClick={() => onStart?.({ destination: 'Roma', days: 3, people: 2 })} className="group bg-gradient-to-r from-brand-orange to-brand-orangelight hover:from-brand-orangelight hover:to-brand-orange text-white px-10 py-5 rounded-full text-xl font-bold hover:shadow-2xl hover:shadow-brand-orange/50 transition-all duration-300 transform hover:scale-105 inline-flex items-center gap-3">
           <Rocket className="w-7 h-7 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
           Prova ItinerAI Gratis
         </button>

@@ -61,7 +61,9 @@ function SpotlightCard({ trips, gradient }: { trips: Trip[]; gradient: string })
   );
 }
 
-export default function Examples() {
+import { type ItineraryParams } from '../utils/itinerary';
+
+export default function Examples({ onStart }: { onStart?: (p: ItineraryParams) => void }) {
   const spotlightTrips: Spotlight[] = useMemo(() => [
     {
       id: 'city-break',
@@ -107,7 +109,19 @@ export default function Examples() {
 
         <div className="grid md:grid-cols-3 gap-8">
           {spotlightTrips.map((spot) => (
-            <SpotlightCard key={spot.id} trips={spot.trips} gradient={spot.gradient} />
+            <div
+              key={spot.id}
+              onClick={() => {
+                const t = spot.trips[0];
+                const m = t?.title?.match(/(\d+)\s+giorni?\s+a\s+(.*)/i) || t?.title?.match(/a\s+(.*)/i);
+                const days = m && m[1] ? parseInt(m[1]) : parseInt((t?.days || '').match(/(\d+)/)?.[1] || '3');
+                const destination = m && m[2] ? m[2] : (t?.title?.split(' a ')[1] || 'Roma');
+                const p: ItineraryParams = { destination, days: isNaN(days) ? 3 : days, people: 2 };
+                onStart?.(p);
+              }}
+            >
+              <SpotlightCard trips={spot.trips} gradient={spot.gradient} />
+            </div>
           ))}
         </div>
       </div>
