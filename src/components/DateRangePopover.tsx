@@ -41,8 +41,8 @@ export default function DateRangePopover({ open, start, end, onClose, onSelectRa
   }
 
   const grid = useMemo(() => {
-    const W = 360, H = 336
-    const mL = 16, mT = 72
+    const W = 320, H = 300
+    const mL = 16, mT = 84
     const cols = 7, rows = 6
     const cellW = (W - mL * 2) / cols
     const cellH = (H - mT - 16) / rows
@@ -104,9 +104,9 @@ export default function DateRangePopover({ open, start, end, onClose, onSelectRa
         .cal-enter-active{opacity:1;transform:scale(1);transition:opacity .18s ease,transform .18s ease}
         .cal-overlay{backdrop-filter: blur(4px);}
       `}</style>
-      <div className="absolute inset-0 bg-slate-950/35 cal-overlay" onClick={onClose} />
+      <div className="absolute inset-0 bg-slate-950/45 cal-overlay" onClick={onClose} />
       <div className="cal-enter cal-enter-active relative max-w-md w-full rounded-3xl border border-white/10 bg-slate-900/90 backdrop-blur-xl shadow-2xl">
-        <button ref={closeBtnRef} onClick={onClose} aria-label="Chiudi calendario" className="absolute top-3 right-4 text-slate-300 hover:text-white px-3 py-1">×</button>
+        <button ref={closeBtnRef} onClick={onClose} aria-label="Chiudi calendario" className="absolute top-3 right-4 text-slate-100 hover:text-white focus:ring-2 focus:ring-white/50 rounded-md px-3 py-1 text-lg">×</button>
         <div className="p-6">
           <div className="flex justify-between gap-4 mb-3">
             <div className="bg-white/5 rounded-full px-3 py-1 text-sm text-slate-200">Partenza <span className="ml-1 font-semibold">{startLabel}</span></div>
@@ -127,13 +127,13 @@ export default function DateRangePopover({ open, start, end, onClose, onSelectRa
                 <stop offset="100%" stopColor="#3b82f6" />
               </linearGradient>
             </defs>
-            <rect x={0} y={0} width={grid.W} height={grid.H} rx={16} fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.18)" />
+            <rect x={0} y={0} width={grid.W} height={grid.H} rx={16} fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.14)" />
             <text id="calendar-title" x={grid.W / 2} y={30} textAnchor="middle" fill="#e5e7eb" fontSize={16} fontWeight={600}>{monthLabel}</text>
             <g>
-              <rect x={16} y={42} width={36} height={24} rx={8} fill="#f97316" opacity={0.9} cursor="pointer" onClick={onPrev} />
-              <text x={34} y={60} textAnchor="middle" fill="#fff" fontSize={14}>◀</text>
-              <rect x={grid.W - 52} y={42} width={36} height={24} rx={8} fill="#3b82f6" opacity={0.9} cursor="pointer" onClick={onNext} />
-              <text x={grid.W - 34} y={60} textAnchor="middle" fill="#fff" fontSize={14}>▶</text>
+              <rect x={16} y={40} width={28} height={22} rx={8} fill="#f97316" opacity={0.9} cursor="pointer" onClick={onPrev} />
+              <text x={30} y={56} textAnchor="middle" fill="#fff" fontSize={13}>◀</text>
+              <rect x={grid.W - 44} y={40} width={28} height={22} rx={8} fill="#3b82f6" opacity={0.9} cursor="pointer" onClick={onNext} />
+              <text x={grid.W - 30} y={56} textAnchor="middle" fill="#fff" fontSize={13}>▶</text>
             </g>
             <g>
               {['L', 'M', 'M', 'G', 'V', 'S', 'D'].map((l, i) => (
@@ -150,15 +150,15 @@ export default function DateRangePopover({ open, start, end, onClose, onSelectRa
                 const startFill = '#3b82f6'
                 const endFill = '#f97316'
                 const fill = isStart ? startFill : isEnd ? endFill : inRange ? rangeFill : baseFill
-                const stroke = isStart || isEnd ? '#fff' : 'rgba(255,255,255,.18)'
+                const stroke = isStart || isEnd ? '#fff' : 'rgba(255,255,255,.12)'
                 const textColor = isStart || isEnd || inRange ? '#ffffff' : '#e5e7eb'
                 return (
                   <g key={cell.day} onMouseEnter={() => setHoverDay(cell.day)} onMouseLeave={() => setHoverDay(null)}>
-                    <rect x={cell.x} y={cell.y} width={cell.w} height={cell.h} rx={10} fill={fill} stroke={stroke} cursor="pointer" onClick={() => clickDay(cell.date)} />
+                    <rect x={cell.x} y={cell.y} width={cell.w} height={cell.h} rx={10} fill={fill} stroke={stroke} strokeWidth={0.7} cursor="pointer" onClick={() => clickDay(cell.date)} />
                     {hoverDay === cell.day && !inRange && !isStart && !isEnd ? (
                       <rect x={cell.x} y={cell.y} width={cell.w} height={cell.h} rx={10} fill="rgba(255,255,255,.10)" />
                     ) : null}
-                    <text x={cell.x + 8} y={cell.y + 22} fill={textColor} fontSize={14} fontWeight={600}>{cell.day}</text>
+                    <text x={cell.x + 8} y={cell.y + 22} fill={textColor} fontSize={14} fontWeight={600} style={{pointerEvents:'none'}}>{cell.day}</text>
                   </g>
                 )
               })}
@@ -169,7 +169,7 @@ export default function DateRangePopover({ open, start, end, onClose, onSelectRa
           </svg>
         </div>
         <div className="flex justify-between items-center px-6 pb-6 mt-2">
-          <button className="text-sm text-slate-300 hover:text-white underline-offset-2 hover:underline" onClick={() => { setSelStart(null); setSelEnd(null) }}>Reset</button>
+          <button className="text-sm text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-white/40 rounded-full px-3 py-1" onClick={() => { setSelStart(null); setSelEnd(null) }}>Reset</button>
           <button className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-xl" onClick={applyRange} disabled={!selStart || !selEnd}>Applica</button>
         </div>
       </div>
