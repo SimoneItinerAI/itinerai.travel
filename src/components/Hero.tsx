@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import DestinationTypewriter from './DestinationTypewriter';
+import DateRangePopover from './DateRangePopover';
  
 import { type ItineraryParams } from '../utils/itinerary';
 import { ArrowRight, CalendarDays, Users } from 'lucide-react';
@@ -11,6 +12,7 @@ export default function Hero({ onStart }: { onStart?: (p: ItineraryParams) => vo
   const [departureDate, setDepartureDate] = useState<string>('');
   const [returnDate, setReturnDate] = useState<string>('');
   const [dateError, setDateError] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const adjustDays = (d: number) => {
     const v = Math.max(1, Math.min(30, (Number(days) || 1) + d));
     setDays(v);
@@ -262,21 +264,24 @@ export default function Hero({ onStart }: { onStart?: (p: ItineraryParams) => vo
             />
             <div className="flex flex-col items-center gap-3 md:gap-4 w-full">
               <div className={`flex items-center bg-white/12 border ${dateError ? 'border-red-500/60' : 'border-white/20'} rounded-full px-2 md:px-3 py-2 md:py-2.5 shadow-[0_0_16px_rgba(255,138,61,.14)] backdrop-blur-md ${pulseDays ? 'ring-1 ring-brand-orange/60' : ''}`}>
-                <CalendarDays className="ml-2 w-4 h-4 md:w-5 md:h-5 text-slate-300" />
+                <button type="button" aria-label="Apri calendario" onClick={() => setCalendarOpen(true)} className="ml-2 text-slate-300 hover:text-white focus:outline-none">
+                  <CalendarDays className="w-4 h-4 md:w-5 md:h-5" />
+                </button>
                 <input
-                  type="date"
+                  type="text"
+                  readOnly
                   aria-label="Data di partenza"
                   value={departureDate}
-                  onChange={(e) => { const v = e.target.value; setDepartureDate(v); computeDaysFromDates(v, returnDate); }}
+                  placeholder="Partenza"
                   className="bg-transparent rounded-full px-3 md:px-4 py-1 md:py-1.5 text-white placeholder-slate-400 focus:outline-none text-sm md:text-base"
                 />
-                <span className="text-xs md:text-sm text-slate-300 mx-2">→</span>
+                <span className="text-xs md:text-sm text-slate-300 mx-1">→</span>
                 <input
-                  type="date"
+                  type="text"
+                  readOnly
                   aria-label="Data di ritorno"
-                  min={departureDate || undefined}
                   value={returnDate}
-                  onChange={(e) => { const v = e.target.value; setReturnDate(v); computeDaysFromDates(departureDate, v); }}
+                  placeholder="Ritorno"
                   className="bg-transparent rounded-full px-3 md:px-4 py-1 md:py-1.5 text-white placeholder-slate-400 focus:outline-none text-sm md:text-base"
                 />
                 <span className="text-xs md:text-sm text-slate-300 ml-3">{!dateError && departureDate && returnDate ? `${days} giorni` : ''}</span>
@@ -301,7 +306,13 @@ export default function Hero({ onStart }: { onStart?: (p: ItineraryParams) => vo
                 <button ref={peoplePlusRef} type="button" onClick={() => adjustPeople(1)} aria-label="Aumenta persone" disabled={people >= 8} className="stepper-btn stepper-people h-8 w-8 md:h-9 md:w-9 rounded-full">+</button>
               </div>
             </div>
-            
+            <DateRangePopover
+              open={calendarOpen}
+              start={departureDate || undefined}
+              end={returnDate || undefined}
+              onClose={() => setCalendarOpen(false)}
+              onSelectRange={(s, e) => { setDepartureDate(s); setReturnDate(e); setCalendarOpen(false); computeDaysFromDates(s, e); }}
+            />
             <button onClick={() => { const d = destination.trim(); if (!d) return; const p: ItineraryParams = { destination: d, days, people }; onStart?.(p); }} className="w-full md:w-auto bg-gradient-to-r from-orange-500 to-orange-600 md:hover:from-orange-600 md:hover:to-orange-700 text-white px-6 md:px-8 py-3.5 md:py-3 rounded-xl md:rounded-full font-semibold flex items-center justify-center gap-2 transition-all shadow-lg md:shadow-none hover:shadow-orange-500/50 whitespace-nowrap mt-2">
               Crea Itinerario
               <ArrowRight className="w-5 h-5" />
