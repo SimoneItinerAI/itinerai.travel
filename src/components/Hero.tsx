@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import DestinationTypewriter from './DestinationTypewriter';
+ 
 import { type ItineraryParams } from '../utils/itinerary';
 import { ArrowRight, CalendarDays, Users } from 'lucide-react';
 
@@ -7,8 +8,26 @@ export default function Hero({ onStart }: { onStart?: (p: ItineraryParams) => vo
   const [destination, setDestination] = useState('');
   const [days, setDays] = useState(3);
   const [people, setPeople] = useState(2);
+  const [departureDate, setDepartureDate] = useState<string>('');
+  const [returnDate, setReturnDate] = useState<string>('');
+  const [dateError, setDateError] = useState(false);
   const adjustDays = (d: number) => {
     const v = Math.max(1, Math.min(30, (Number(days) || 1) + d));
+    setDays(v);
+    setPulseDays(true);
+    window.setTimeout(() => setPulseDays(false), 180);
+  };
+  const computeDaysFromDates = (start?: string, end?: string) => {
+    if (!start || !end) return;
+    const s = new Date(start);
+    const e = new Date(end);
+    if (e.getTime() < s.getTime()) {
+      setDateError(true);
+      return;
+    }
+    setDateError(false);
+    const diff = Math.floor((e.getTime() - s.getTime()) / 86400000) + 1;
+    const v = Math.max(1, Math.min(30, diff));
     setDays(v);
     setPulseDays(true);
     window.setTimeout(() => setPulseDays(false), 180);
@@ -242,24 +261,25 @@ export default function Hero({ onStart }: { onStart?: (p: ItineraryParams) => vo
               className="w-full bg-transparent px-4 md:px-6 py-3.5 md:py-3 text-white placeholder-slate-400 text-[clamp(.95rem,1.8vw,1rem)] focus:outline-none"
             />
             <div className="flex flex-col items-center gap-3 md:gap-4 w-full">
-              <div className={`flex items-center bg-white/12 border border-white/20 rounded-full px-2 md:px-3 py-2 md:py-2.5 shadow-[0_0_16px_rgba(255,138,61,.14)] backdrop-blur-md ${pulseDays ? 'ring-1 ring-brand-orange/60' : ''}`}>
-                <button ref={daysMinusRef} type="button" onClick={() => adjustDays(-1)} aria-label="Riduci giorni" disabled={days <= 1} className="stepper-btn stepper-days h-8 w-8 md:h-9 md:w-9 rounded-full">−</button>
+              <div className={`flex items-center bg-white/12 border ${dateError ? 'border-red-500/60' : 'border-white/20'} rounded-full px-2 md:px-3 py-2 md:py-2.5 shadow-[0_0_16px_rgba(255,138,61,.14)] backdrop-blur-md ${pulseDays ? 'ring-1 ring-brand-orange/60' : ''}`}>
                 <CalendarDays className="ml-2 w-4 h-4 md:w-5 md:h-5 text-slate-300" />
                 <input
-                  type="number"
-                  min={1}
-                  max={30}
-                  value={days}
-                  readOnly
-                  inputMode="numeric"
-                  onKeyDown={(e) => e.preventDefault()}
-                  onWheel={(e) => e.preventDefault()}
-                  aria-label="Giorni di viaggio"
-                  className="w-20 md:w-28 bg-transparent rounded-full px-3 md:px-4 py-1 md:py-1.5 text-white placeholder-slate-400 focus:outline-none text-sm md:text-base"
-                  placeholder="3"
+                  type="date"
+                  aria-label="Data di partenza"
+                  value={departureDate}
+                  onChange={(e) => { const v = e.target.value; setDepartureDate(v); computeDaysFromDates(v, returnDate); }}
+                  className="bg-transparent rounded-full px-3 md:px-4 py-1 md:py-1.5 text-white placeholder-slate-400 focus:outline-none text-sm md:text-base"
                 />
-                <span className="text-xs md:text-sm text-slate-300 mr-2 md:mr-3">giorni</span>
-                <button ref={daysPlusRef} type="button" onClick={() => adjustDays(1)} aria-label="Aumenta giorni" disabled={days >= 30} className="stepper-btn stepper-days h-8 w-8 md:h-9 md:w-9 rounded-full">+</button>
+                <span className="text-xs md:text-sm text-slate-300 mx-2">→</span>
+                <input
+                  type="date"
+                  aria-label="Data di ritorno"
+                  min={departureDate || undefined}
+                  value={returnDate}
+                  onChange={(e) => { const v = e.target.value; setReturnDate(v); computeDaysFromDates(departureDate, v); }}
+                  className="bg-transparent rounded-full px-3 md:px-4 py-1 md:py-1.5 text-white placeholder-slate-400 focus:outline-none text-sm md:text-base"
+                />
+                <span className="text-xs md:text-sm text-slate-300 ml-3">{!dateError && departureDate && returnDate ? `${days} giorni` : ''}</span>
               </div>
               <div className={`flex items-center bg-white/12 border border-white/20 rounded-full px-2 md:px-3 py-2 md:py-2.5 shadow-[0_0_16px_rgba(59,130,246,.14)] backdrop-blur-md ${pulsePeople ? 'ring-1 ring-brand-blue/60' : ''}`}>
                 <button ref={peopleMinusRef} type="button" onClick={() => adjustPeople(-1)} aria-label="Riduci persone" disabled={people <= 1} className="stepper-btn stepper-people h-8 w-8 md:h-9 md:w-9 rounded-full">−</button>
@@ -281,6 +301,7 @@ export default function Hero({ onStart }: { onStart?: (p: ItineraryParams) => vo
                 <button ref={peoplePlusRef} type="button" onClick={() => adjustPeople(1)} aria-label="Aumenta persone" disabled={people >= 8} className="stepper-btn stepper-people h-8 w-8 md:h-9 md:w-9 rounded-full">+</button>
               </div>
             </div>
+            
             <button onClick={() => { const d = destination.trim(); if (!d) return; const p: ItineraryParams = { destination: d, days, people }; onStart?.(p); }} className="w-full md:w-auto bg-gradient-to-r from-orange-500 to-orange-600 md:hover:from-orange-600 md:hover:to-orange-700 text-white px-6 md:px-8 py-3.5 md:py-3 rounded-xl md:rounded-full font-semibold flex items-center justify-center gap-2 transition-all shadow-lg md:shadow-none hover:shadow-orange-500/50 whitespace-nowrap mt-2">
               Crea Itinerario
               <ArrowRight className="w-5 h-5" />
