@@ -253,7 +253,9 @@ export default function Hero({ onStart }: { onStart?: (p: ItineraryParams) => vo
               .stepper-days { background-image: linear-gradient(90deg,#FF8A3D 0%,#FFB070 100%); }
               .stepper-people { background-image: linear-gradient(90deg,#3B82F6 0%,#14B8A6 100%); }
             `}</style>
-            <DestinationTypewriter />
+            <div className={calendarOpen ? 'opacity-0 transition-opacity duration-150' : 'opacity-100 transition-opacity duration-150'}>
+              <DestinationTypewriter />
+            </div>
             <input
               type="text"
               placeholder="Digita qui la tua meta"
