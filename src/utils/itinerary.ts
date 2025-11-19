@@ -66,3 +66,8 @@ export function startItineraryGeneration(params: ItineraryParams, onNavigate: ()
   saveItineraryToStorage(data);
   onNavigate();
 }
+
+export function forceGenerateItinerary(params: ItineraryParams) {
+  const data = generateMockItinerary(params);
+  saveItineraryToStorage(data);
+}

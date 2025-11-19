@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { geocodeCity as geocodeCityOSM } from '../services/nominatim';
 import { fetchAttractions, type Attraction } from '../services/overpass';
-import { loadItineraryFromStorage, type ItineraryData } from '../utils/itinerary';
+import { loadItineraryFromStorage, type ItineraryData, forceGenerateItinerary } from '../utils/itinerary';
 
 type Wiki = { title: string; description?: string; extract?: string; thumbnailUrl?: string; pageUrl?: string };
 type EnrichedAttraction = Attraction & { wiki?: Wiki };
@@ -123,7 +123,10 @@ export default function Proposals({ destination, onBack }: { destination: string
               <h1 className="text-3xl md:text-4xl font-bold">Proposte per {itinerary.summaryTitle}</h1>
               <p className="text-slate-600">Collegamenti reali e luoghi consigliati</p>
             </div>
-            <button onClick={onBack} className="px-4 py-2 rounded-full border border-slate-300 text-slate-700 hover:bg-slate-50">← Torna indietro</button>
+            <div className="flex items-center gap-2">
+              <button onClick={() => { if (!itinerary) return; forceGenerateItinerary(itinerary.params); setItinerary(loadItineraryFromStorage()); }} className="px-4 py-2 rounded-full border border-brand-orange text-brand-orange hover:bg-brand-orange/10">Rigenera itinerario</button>
+              <button onClick={onBack} className="px-4 py-2 rounded-full border border-slate-300 text-slate-700 hover:bg-slate-50">← Torna indietro</button>
+            </div>
           </div>
         )}
 

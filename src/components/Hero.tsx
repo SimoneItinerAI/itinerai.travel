@@ -1,8 +1,46 @@
-import { useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import DestinationTypewriter from './DestinationTypewriter';
+import { type ItineraryParams } from '../utils/itinerary';
+import { ArrowRight, CalendarDays, Users } from 'lucide-react';
 
-export default function Hero({ onCreate }: { onCreate?: (dest: string) => void }) {
+export default function Hero({ onStart }: { onStart?: (p: ItineraryParams) => void }) {
   const [destination, setDestination] = useState('');
+  const [days, setDays] = useState(3);
+  const [people, setPeople] = useState(2);
+  const adjustDays = (d: number) => {
+    const v = Math.max(1, Math.min(30, (Number(days) || 1) + d));
+    setDays(v);
+    setPulseDays(true);
+    window.setTimeout(() => setPulseDays(false), 180);
+  };
+  const adjustPeople = (d: number) => {
+    const v = Math.max(1, Math.min(8, (Number(people) || 1) + d));
+    setPeople(v);
+    setPulsePeople(true);
+    window.setTimeout(() => setPulsePeople(false), 180);
+  };
+  
+  const [pulseDays, setPulseDays] = useState(false);
+  const [pulsePeople, setPulsePeople] = useState(false);
+  
+  const daysMinusRef = useRef<HTMLButtonElement | null>(null);
+  const daysPlusRef = useRef<HTMLButtonElement | null>(null);
+  const peopleMinusRef = useRef<HTMLButtonElement | null>(null);
+  const peoplePlusRef = useRef<HTMLButtonElement | null>(null);
+  
+
+  useEffect(() => {
+    const cmp = (a: HTMLElement | null, b: HTMLElement | null, label: string) => {
+      if (!a || !b) return;
+      const sa = getComputedStyle(a);
+      const sb = getComputedStyle(b);
+      const ca = sa.backgroundImage || sa.backgroundColor;
+      const cb = sb.backgroundImage || sb.backgroundColor;
+      if (ca !== cb) console.warn(`Color mismatch in ${label} +/-`, { ca, cb });
+    };
+    cmp(daysMinusRef.current, daysPlusRef.current, 'days');
+    cmp(peopleMinusRef.current, peoplePlusRef.current, 'people');
+  }, [days, people]);
   
 
   return (
@@ -168,7 +206,7 @@ export default function Hero({ onCreate }: { onCreate?: (dest: string) => void }
       {/* Dark overlay for text readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-slate-950/20 via-slate-950/30 to-slate-950/50"></div>
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center pt-24">
+      <div className="relative z-10 mx-auto px-6 pt-24 pb-32 max-w-5xl text-center flex flex-col items-center gap-6">
 
         <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight tracking-tight">
           Pianifica.
@@ -184,17 +222,66 @@ export default function Hero({ onCreate }: { onCreate?: (dest: string) => void }
           Inserisci una destinazione e guarda ItinerAI creare il tuo viaggio ideale in pochi secondi.
         </p>
 
-        <div className="max-w-xl mx-auto mb-8">
-          <div className="w-full flex flex-col md:flex-row gap-2 md:gap-3 bg-white/8 md:bg-white/5 backdrop-blur-md p-3 md:p-2 rounded-2xl md:rounded-full border border-white/20 md:hover:border-orange-500/50 shadow-md md:shadow-none transition-all">
+        <div className="mx-auto max-w-[45rem] w-full">
+          <div className="w-full flex flex-col items-center gap-3 md:gap-4 bg-white/8 md:bg-white/5 backdrop-blur-md p-4 md:p-5 rounded-2xl border border-white/20 md:hover:border-orange-500/50 shadow-md transition-all">
+            <style>{`@media (prefers-reduced-motion: reduce){ .cursor-hero{ animation: none !important; opacity: 1 !important; } }`}</style>
+            <style>{`
+              .stepper-btn { color: #e5e7eb; background: rgba(255,255,255,.10); }
+              .stepper-btn:hover { background: rgba(255,255,255,.20); }
+              .stepper-btn:disabled { opacity: .5; cursor: not-allowed; }
+              .stepper-days { background-image: linear-gradient(90deg,#FF8A3D 0%,#FFB070 100%); }
+              .stepper-people { background-image: linear-gradient(90deg,#3B82F6 0%,#14B8A6 100%); }
+            `}</style>
+            <DestinationTypewriter />
             <input
               type="text"
-              placeholder="Dove vuoi andare?"
+              placeholder="Digita qui la tua meta"
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') { const d = destination.trim(); if (!d) return; onCreate?.(d); } }}
-              className="flex-1 bg-transparent px-4 md:px-6 py-3.5 md:py-3 text-white placeholder-slate-400 text-base focus:outline-none"
+              onKeyDown={(e) => { if (e.key === 'Enter') { const d = destination.trim(); if (!d) return; const p: ItineraryParams = { destination: d, days, people }; onStart?.(p); } }}
+              className="w-full bg-transparent px-4 md:px-6 py-3.5 md:py-3 text-white placeholder-slate-400 text-[clamp(.95rem,1.8vw,1rem)] focus:outline-none"
             />
-            <button onClick={() => { const d = destination.trim(); if (!d) return; onCreate?.(d); }} className="w-full md:w-auto bg-gradient-to-r from-orange-500 to-orange-600 md:hover:from-orange-600 md:hover:to-orange-700 text-white px-6 md:px-8 py-3.5 md:py-3 rounded-xl md:rounded-full font-semibold flex items-center justify-center gap-2 transition-all shadow-lg md:shadow-none hover:shadow-orange-500/50 whitespace-nowrap">
+            <div className="flex flex-col items-center gap-3 md:gap-4 w-full">
+              <div className={`flex items-center bg-white/12 border border-white/20 rounded-full px-2 md:px-3 py-2 md:py-2.5 shadow-[0_0_16px_rgba(255,138,61,.14)] backdrop-blur-md ${pulseDays ? 'ring-1 ring-brand-orange/60' : ''}`}>
+                <button ref={daysMinusRef} type="button" onClick={() => adjustDays(-1)} aria-label="Riduci giorni" disabled={days <= 1} className="stepper-btn stepper-days h-8 w-8 md:h-9 md:w-9 rounded-full">−</button>
+                <CalendarDays className="ml-2 w-4 h-4 md:w-5 md:h-5 text-slate-300" />
+                <input
+                  type="number"
+                  min={1}
+                  max={30}
+                  value={days}
+                  readOnly
+                  inputMode="numeric"
+                  onKeyDown={(e) => e.preventDefault()}
+                  onWheel={(e) => e.preventDefault()}
+                  aria-label="Giorni di viaggio"
+                  className="w-20 md:w-28 bg-transparent rounded-full px-3 md:px-4 py-1 md:py-1.5 text-white placeholder-slate-400 focus:outline-none text-sm md:text-base"
+                  placeholder="3"
+                />
+                <span className="text-xs md:text-sm text-slate-300 mr-2 md:mr-3">giorni</span>
+                <button ref={daysPlusRef} type="button" onClick={() => adjustDays(1)} aria-label="Aumenta giorni" disabled={days >= 30} className="stepper-btn stepper-days h-8 w-8 md:h-9 md:w-9 rounded-full">+</button>
+              </div>
+              <div className={`flex items-center bg-white/12 border border-white/20 rounded-full px-2 md:px-3 py-2 md:py-2.5 shadow-[0_0_16px_rgba(59,130,246,.14)] backdrop-blur-md ${pulsePeople ? 'ring-1 ring-brand-blue/60' : ''}`}>
+                <button ref={peopleMinusRef} type="button" onClick={() => adjustPeople(-1)} aria-label="Riduci persone" disabled={people <= 1} className="stepper-btn stepper-people h-8 w-8 md:h-9 md:w-9 rounded-full">−</button>
+                <Users className="ml-2 w-4 h-4 md:w-5 md:h-5 text-slate-300" />
+                <input
+                  type="number"
+                  min={1}
+                  max={8}
+                  value={people}
+                  readOnly
+                  inputMode="numeric"
+                  onKeyDown={(e) => e.preventDefault()}
+                  onWheel={(e) => e.preventDefault()}
+                  aria-label="Numero di persone"
+                  className="w-20 md:w-28 bg-transparent rounded-full px-3 md:px-4 py-1 md:py-1.5 text-white placeholder-slate-400 focus:outline-none text-sm md:text-base"
+                  placeholder="2"
+                />
+                <span className="text-xs md:text-sm text-slate-300 mr-2 md:mr-3">persone</span>
+                <button ref={peoplePlusRef} type="button" onClick={() => adjustPeople(1)} aria-label="Aumenta persone" disabled={people >= 8} className="stepper-btn stepper-people h-8 w-8 md:h-9 md:w-9 rounded-full">+</button>
+              </div>
+            </div>
+            <button onClick={() => { const d = destination.trim(); if (!d) return; const p: ItineraryParams = { destination: d, days, people }; onStart?.(p); }} className="w-full md:w-auto bg-gradient-to-r from-orange-500 to-orange-600 md:hover:from-orange-600 md:hover:to-orange-700 text-white px-6 md:px-8 py-3.5 md:py-3 rounded-xl md:rounded-full font-semibold flex items-center justify-center gap-2 transition-all shadow-lg md:shadow-none hover:shadow-orange-500/50 whitespace-nowrap mt-2">
               Crea Itinerario
               <ArrowRight className="w-5 h-5" />
             </button>
@@ -206,7 +293,7 @@ export default function Hero({ onCreate }: { onCreate?: (dest: string) => void }
         </p>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-40 md:h-48 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
     </section>
   );
 }

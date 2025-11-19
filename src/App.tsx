@@ -31,9 +31,8 @@ function App() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      <Hero onCreate={(d) => {
-        const params: ItineraryParams = { destination: d, days: 3, people: 2 };
-        startItineraryGeneration(params, () => { setDest(d); setView('proposals'); });
+      <Hero onStart={(p: ItineraryParams) => {
+        startItineraryGeneration(p, () => { setDest(p.destination); setView('proposals'); });
       }} />
       <WhatIsItinerAI />
       <section id="how" className="scroll-mt-24">
