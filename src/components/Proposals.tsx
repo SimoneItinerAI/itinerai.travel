@@ -84,14 +84,14 @@ export default function Proposals({ destination, onBack }: { destination: string
                       }
                     }
                   }
-                } catch {}
+                } catch { void 0 }
                 return { ...p, wiki } as EnrichedAttraction;
               })
             );
             if (!cancelled) setPois(enriched);
           }
         }
-      } catch (e: any) {
+      } catch {
         if (!cancelled) setError('Impossibile caricare i luoghi da vedere.');
       } finally {
         if (!cancelled) setLoading(false);

@@ -237,36 +237,43 @@ export default function Hero({ onStart, onDatePickerToggle, datePickerState }: {
         <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight tracking-tight">
           Pianifica.
           <br />
-          <span className="text-transparent bg-gradient-to-r from-orange-500 via-blue-400 to-orange-500 bg-clip-text">
+          <span className="text-transparent bg-gradient-to-r from-orange-500 via-blue-400 to-orange-500 bg-clip-text pulse-text">
             Esplora. Vivi.
           </span>
           <br />
-          Tutto grazie all'<span className="text-blue-400">intelligenza artificiale.</span>
+          <span className="text-transparent bg-gradient-to-r from-brand-orange via-brand-blue to-brand-orangelight bg-clip-text filter drop-shadow-md md:drop-shadow-lg">
+            <span className="lg:text-white lg:drop-shadow-lg">Il tuo viaggio completo, creato</span>{' '}
+            <span className="lg:text-brand-blue lg:drop-shadow-lg">in pochi secondi</span>{' '}
+            <span className="lg:text-brand-orange lg:drop-shadow-lg">con l’intelligenza artificiale.</span>
+          </span>
         </h1>
 
         <p className="text-xl md:text-2xl text-slate-300 mb-12 max-w-2xl mx-auto leading-relaxed">
-          Inserisci una destinazione e guarda ItinerAI creare il tuo viaggio ideale in pochi secondi.
+          <span className="font-semibold">Inserisci una destinazione, le date e il numero di persone.</span>
+          <span className="block mt-2">ItinerAI genera un itinerario <span className="text-transparent bg-gradient-to-r from-brand-blue/90 to-brand-teal/90 bg-clip-text font-medium filter drop-shadow-sm md:drop-shadow-lg md:from-white/95 md:to-white/95">giorno per giorno</span> con voli, hotel, attività e tanto altro con <span className="text-transparent bg-gradient-to-r from-brand-orange/90 to-brand-orangelight/90 bg-clip-text font-medium filter drop-shadow-sm md:drop-shadow-lg md:from-white/95 md:to-white/95">link pronti alla prenotazione</span>.</span>
         </p>
 
         <div className="mx-auto max-w-[45rem] w-full relative">
           <div className="w-full flex flex-col items-center gap-3 md:gap-4 bg-white/8 md:bg-white/5 backdrop-blur-md p-4 md:p-5 rounded-2xl border border-white/20 md:hover:border-orange-500/50 shadow-md transition-all">
-            <style>{`@media (prefers-reduced-motion: reduce){ .cursor-hero{ animation: none !important; opacity: 1 !important; } }`}</style>
+            <style>{`@media (prefers-reduced-motion: reduce){ .cursor-hero{ animation: none !important; opacity: 1 !important; } .pulse-text{ animation: none !important; } }`}</style>
             <style>{`
               .stepper-btn { color: #e5e7eb; background: rgba(255,255,255,.10); }
               .stepper-btn:hover { background: rgba(255,255,255,.20); }
               .stepper-btn:disabled { opacity: .5; cursor: not-allowed; }
               .stepper-days { background-image: linear-gradient(90deg,#FF8A3D 0%,#FFB070 100%); }
               .stepper-people { background-image: linear-gradient(90deg,#3B82F6 0%,#14B8A6 100%); }
+              @keyframes pulseText { 0%,100%{ transform: scale(1); text-shadow: 0 0 0 rgba(255,255,255,0); } 50%{ transform: scale(1.01); text-shadow: 0 0 14px rgba(255,255,255,.18);} }
+              .pulse-text { display: inline-block; animation: pulseText 3.2s ease-in-out infinite; will-change: transform, text-shadow; }
             `}</style>
             <DestinationTypewriter />
-            <input
-              type="text"
-              placeholder="Digita qui la tua meta"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') { const d = destination.trim(); if (!d) return; const p: ItineraryParams = { destination: d, days, people }; onStart?.(p); } }}
-              className="w-full bg-transparent px-4 md:px-6 py-3.5 md:py-3 text-white placeholder-slate-400 text-[clamp(.95rem,1.8vw,1rem)] focus:outline-none"
-            />
+          <input
+            type="text"
+            placeholder="Digita qui la tua meta"
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { const d = destination.trim(); if (!d) return; const p: ItineraryParams = { destination: d, days, people, startDate: travelDates.startDate, endDate: travelDates.endDate }; onStart?.(p); } }}
+            className="w-full bg-transparent px-4 md:px-6 py-3.5 md:py-3 text-white placeholder-slate-400 text-[clamp(.95rem,1.8vw,1rem)] focus:outline-none"
+          />
             <div className="flex flex-col items-center gap-3 md:gap-4 w-full">
               <div className="relative flex items-center bg-white/12 border border-white/20 rounded-full px-2 md:px-3 py-2 md:py-2.5 shadow-[0_0_16px_rgba(255,138,61,.14)] backdrop-blur-md w-full">
                 <TravelDateSelector
@@ -292,17 +299,22 @@ export default function Hero({ onStart, onDatePickerToggle, datePickerState }: {
                     className="w-10 md:w-12 bg-transparent rounded-full px-1 py-1 md:py-1.5 text-white placeholder-slate-400 focus:outline-none text-sm md:text-base text-center"
                     placeholder="2"
                   />
-                  <span className="text-xs md:text-sm text-slate-300 -ml-4">persone</span>
+                  <span className="text-xs md:text-sm text-slate-300 ml-1">persone</span>
                 </div>
                 <button ref={peoplePlusRef} type="button" onClick={() => adjustPeople(1)} aria-label="Aumenta persone" disabled={people >= 8} className="stepper-btn stepper-people h-8 w-8 md:h-9 md:w-9 rounded-full">+</button>
               </div>
             </div>
             
             <button onClick={() => { const d = destination.trim(); if (!d) return; const p: ItineraryParams = { destination: d, days, people, startDate: travelDates.startDate, endDate: travelDates.endDate }; onStart?.(p); }} className="w-full md:w-auto bg-gradient-to-r from-orange-500 to-orange-600 md:hover:from-orange-600 md:hover:to-orange-700 text-white px-6 md:px-8 py-3.5 md:py-3 rounded-xl md:rounded-full font-semibold flex items-center justify-center gap-2 transition-all shadow-lg md:shadow-none hover:shadow-orange-500/50 whitespace-nowrap mt-2">
-              Crea Itinerario
+              Genera il tuo viaggio
               <ArrowRight className="w-5 h-5" />
             </button>
           </div>
+        </div>
+
+        <div className="text-center mt-4">
+          <p className="text-sm text-slate-300">Potrai modificarlo subito insieme all’IA.</p>
+          <a href="#examples" className="text-sm text-brand-orange hover:underline mt-2 inline-block">Guarda un itinerario di esempio</a>
         </div>
 
         <p className="text-slate-400 text-sm">

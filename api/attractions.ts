@@ -3,6 +3,14 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 type Wiki = { title?: string; description?: string; extract?: string; thumbnailUrl?: string; pageUrl?: string }
 type Attr = { id: string; name: string; lat?: number; lon?: number; wiki?: Wiki }
 
+type OverpassElement = {
+  id: number | string
+  tags?: { name?: string }
+  lat?: number
+  lon?: number
+  center?: { lat: number; lon: number }
+}
+
 const cache = new Map<string, { ts: number; data: Attr[] }>()
 const TTL = 1000 * 60 * 30
 
@@ -29,8 +37,10 @@ async function overpass(lat: number, lon: number, radius: number, limit: number)
   const r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: q })
   if (!r.ok) return []
   const data = await r.json()
-  const elements = Array.isArray(data?.elements) ? data.elements : []
-  const list: Attr[] = elements.map((e: any) => ({ id: String(e.id), name: e?.tags?.name, lat: e?.lat ?? e?.center?.lat, lon: e?.lon ?? e?.center?.lon })).filter((a) => a.name)
+  const elements = Array.isArray(data?.elements) ? (data.elements as OverpassElement[]) : []
+  const list: Attr[] = elements
+    .map((e: OverpassElement) => ({ id: String(e.id), name: e?.tags?.name, lat: e?.lat ?? e?.center?.lat, lon: e?.lon ?? e?.center?.lon }))
+    .filter((a) => a.name)
   return list.slice(0, limit)
 }
 
@@ -57,7 +67,7 @@ async function enrichWiki(a: Attr, lang = 'it'): Promise<Attr> {
         }
       }
     }
-  } catch {}
+  } catch { void 0 }
   return { ...a, wiki }
 }
 
