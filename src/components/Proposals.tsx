@@ -2,6 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { geocodeCity as geocodeCityOSM } from '../services/nominatim';
 import { fetchAttractions, type Attraction } from '../services/overpass';
 import { loadItineraryFromStorage, type ItineraryData, forceGenerateItinerary } from '../utils/itinerary';
+import {
+  buildBookingUrl,
+  buildAirbnbUrl,
+  buildGetYourGuideUrl,
+  // buildFlightsUrl,
+  type BaseItineraryContext,
+} from '../utils/linkBuilders';
 
 type Wiki = { title: string; description?: string; extract?: string; thumbnailUrl?: string; pageUrl?: string };
 type EnrichedAttraction = Attraction & { wiki?: Wiki };
@@ -102,9 +109,14 @@ export default function Proposals({ destination, onBack }: { destination: string
   }, [city, itinerary]);
 
   const destForLinks = itinerary?.params.destination || city;
-  const bookingUrl = destForLinks ? `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(destForLinks)}` : '#';
-  const airbnbUrl = destForLinks ? `https://www.airbnb.com/s/${encodeURIComponent(destForLinks)}/homes` : '#';
-  const gygUrl = destForLinks ? `https://www.getyourguide.com/s/?q=${encodeURIComponent(destForLinks)}` : '#';
+  const itineraryContext: BaseItineraryContext = {
+    city: destForLinks,
+    days: itinerary?.params.days,
+    guests: itinerary?.params.people,
+  };
+  const bookingUrl = buildBookingUrl(itineraryContext);
+  const airbnbUrl = buildAirbnbUrl(itineraryContext);
+  const gygUrl = buildGetYourGuideUrl(itineraryContext);
 
   return (
     <section className="min-h-screen w-full bg-white text-slate-900">
@@ -166,8 +178,8 @@ export default function Proposals({ destination, onBack }: { destination: string
             <div className="p-4 space-y-3">
               <p className="text-xs text-slate-600">Zona consigliata: vicino al centro o alle tappe principali del tuo itinerario.</p>
               <p className="text-xs text-slate-600">Fascia di prezzo stimata: €€</p>
-              <a href={bookingUrl} target="_blank" rel="noreferrer" className="block px-4 py-2 rounded-xl bg-gradient-to-r from-brand-blue to-brand-teal text-white font-semibold text-center">Cerca su Booking</a>
-              <a href={airbnbUrl} target="_blank" rel="noreferrer" className="block px-4 py-2 rounded-xl bg-gradient-to-r from-brand-orange to-brand-orangelight text-white font-semibold text-center">Cerca su Airbnb</a>
+              <a href={bookingUrl || '#'} onClick={(e)=>{ if(!bookingUrl) e.preventDefault(); }} target="_blank" rel="noopener noreferrer" className="block px-4 py-2 rounded-xl bg-gradient-to-r from-brand-blue to-brand-teal text-white font-semibold text-center">Cerca su Booking</a>
+              <a href={airbnbUrl || '#'} onClick={(e)=>{ if(!airbnbUrl) e.preventDefault(); }} target="_blank" rel="noopener noreferrer" className="block px-4 py-2 rounded-xl bg-gradient-to-r from-brand-orange to-brand-orangelight text-white font-semibold text-center">Cerca su Airbnb</a>
             </div>
           </div>
 
@@ -182,7 +194,7 @@ export default function Proposals({ destination, onBack }: { destination: string
             <div className="p-4 space-y-3">
               <p className="text-xs text-slate-600">Suggerito: tour panoramico o crociera sul fiume.</p>
               <p className="text-xs text-slate-600">Consigliato anche un free walking tour nel centro storico.</p>
-              <a href={gygUrl} target="_blank" rel="noreferrer" className="block px-4 py-2 rounded-xl bg-gradient-to-r from-brand-blue to-brand-teal text-white font-semibold text-center">Cerca tour e attività</a>
+              <a href={gygUrl || '#'} onClick={(e)=>{ if(!gygUrl) e.preventDefault(); }} target="_blank" rel="noopener noreferrer" className="block px-4 py-2 rounded-xl bg-gradient-to-r from-brand-blue to-brand-teal text-white font-semibold text-center">Cerca tour e attività</a>
             </div>
           </div>
 
