@@ -340,18 +340,6 @@ export default function Hero({ onStart, onDatePickerToggle, datePickerState }: {
   ];
 
   // Autocomplete functions
-  // Validation function to check for duplicates
-  const validateDestination = (newDest: { name: string; flag: string }) => {
-    const exists = DESTINATIONS_WITH_FLAGS.some(dest => 
-      dest.name.toLowerCase() === newDest.name.toLowerCase()
-    );
-    if (exists) {
-      console.warn(`Destination "${newDest.name}" already exists in the list`);
-      return false;
-    }
-    return true;
-  };
-
   const filterSuggestions = (input: string) => {
     if (!input) {
       setSuggestions([]);
@@ -652,7 +640,7 @@ export default function Hero({ onStart, onDatePickerToggle, datePickerState }: {
           <span className="block mt-2">ItinerAI genera un itinerario <span className="text-transparent bg-gradient-to-r from-brand-blue/90 to-brand-teal/90 bg-clip-text font-medium filter drop-shadow-sm md:drop-shadow-lg md:from-white/95 md:to-white/95">giorno per giorno</span> con voli, hotel, attività e tanto altro con <span className="text-transparent bg-gradient-to-r from-brand-orange/90 to-brand-orangelight/90 bg-clip-text font-medium filter drop-shadow-sm md:drop-shadow-lg md:from-white/95 md:to-white/95">link pronti alla prenotazione</span>.</span>
         </p>
 
-        <div className="mx-auto max-w-[45rem] w-full relative">
+        <div id="hero-search-container" className="mx-auto max-w-[45rem] w-full relative">
           <div className="w-full flex flex-col items-center gap-3 md:gap-4 bg-white/8 md:bg-white/5 backdrop-blur-md p-4 md:p-5 rounded-2xl border border-white/20 md:hover:border-orange-500/50 shadow-md transition-all">
             <style>{`@media (prefers-reduced-motion: reduce){ .cursor-hero{ animation: none !important; opacity: 1 !important; } .pulse-text{ animation: none !important; } }`}</style>
             <style>{`

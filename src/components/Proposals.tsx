@@ -157,31 +157,31 @@ export default function Proposals({ destination, onBack }: { destination: string
     <section className="min-h-screen w-full bg-white text-slate-900">
       <div className="max-w-6xl mx-auto px-6 py-8">
         {!itinerary ? (
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold">Proposte</h1>
-              <p className="text-slate-600">Collegamenti reali e luoghi consigliati</p>
-              <p className="text-xs text-slate-500 mt-1">Genera un viaggio dalla pagina iniziale per vedere proposte basate sul tuo itinerario.</p>
             </div>
-            <button onClick={onBack} className="px-4 py-2 rounded-full border border-slate-300 text-slate-700 hover:bg-slate-50">← Torna indietro</button>
+            <div className="mt-3 flex w-full flex-col gap-2 md:mt-0 md:w-auto md:flex-row md:gap-3">
+              <button onClick={onBack} className="w-full md:w-auto px-4 py-2 rounded-full border border-slate-300 text-slate-700 hover:bg-slate-50">← Torna indietro</button>
+            </div>
           </div>
         ) : (
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold">Proposte per {itinerary.summaryTitle}</h1>
-              <p className="text-slate-600">Collegamenti reali e luoghi consigliati</p>
-              <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                <span className="px-2 py-1 rounded-full bg-slate-100 text-slate-700">{itinerary.params.destination}</span>
-                <span className="px-2 py-1 rounded-full bg-slate-100 text-slate-700">{itinerary.params.days} {itinerary.params.days === 1 ? 'giorno' : 'giorni'}</span>
-                <span className="px-2 py-1 rounded-full bg-slate-100 text-slate-700">{itinerary.params.people} {itinerary.params.people === 1 ? 'persona' : 'persone'}</span>
-                {itinerary.params.startDate && itinerary.params.endDate && (
-                  <span className="px-2 py-1 rounded-full bg-slate-100 text-slate-700">{new Date(itinerary.params.startDate).toLocaleDateString('it-IT')} – {new Date(itinerary.params.endDate).toLocaleDateString('it-IT')}</span>
-                )}
-              </div>
+              <h1 className="hidden md:block text-4xl font-bold tracking-tight text-slate-900">Proposte per {itinerary.summaryTitle}</h1>
+              <h1 className="block md:hidden text-2xl font-bold tracking-tight text-slate-900">
+                {destForLinks} · {itinerary.params.days} {itinerary.params.days === 1 ? 'giorno' : 'giorni'} · {itinerary.params.people} {itinerary.params.people === 1 ? 'persona' : 'persone'}
+              </h1>
+              {itinerary.params.startDate && itinerary.params.endDate && (
+                <p className="block md:hidden text-sm text-slate-500">
+                  dal {new Date(itinerary.params.startDate).toLocaleDateString('it-IT')} al {new Date(itinerary.params.endDate).toLocaleDateString('it-IT')}
+                </p>
+              )}
+
             </div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => { if (!itinerary) return; forceGenerateItinerary(itinerary.params); setItinerary(loadItineraryFromStorage()); }} className="px-4 py-2 rounded-full border border-brand-orange text-brand-orange hover:bg-brand-orange/10">Rigenera itinerario</button>
-              <button onClick={onBack} className="px-4 py-2 rounded-full border border-slate-300 text-slate-700 hover:bg-slate-50">← Torna indietro</button>
+            <div className="mt-3 flex w-full flex-col gap-2 md:mt-0 md:w-auto md:flex-row md:gap-3">
+              <button onClick={() => { if (!itinerary) return; forceGenerateItinerary(itinerary.params); setItinerary(loadItineraryFromStorage()); }} className="w-full md:w-auto px-4 py-2 rounded-full border border-brand-orange text-brand-orange hover:bg-brand-orange/10">Rigenera itinerario</button>
+              <button onClick={onBack} className="w-full md:w-auto px-4 py-2 rounded-full border border-slate-300 text-slate-700 hover:bg-slate-50">← Torna indietro</button>
             </div>
           </div>
         )}
@@ -191,7 +191,7 @@ export default function Proposals({ destination, onBack }: { destination: string
           <div className="flex items-center gap-3">
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-blue to-brand-teal" />
             <div>
-              <p className="text-xl md:text-2xl font-semibold">{itinerary.summaryTitle} – Itinerario generato da ItinerAI</p>
+              <p className="text-xl md:text-2xl font-semibold">{itinerary.summaryTitle} – Itiner<span className="text-brand-orange">AI</span> ha creato questo per te</p>
               <p className="text-sm text-slate-600">{itinerary.summarySubtitle}</p>
             </div>
           </div>

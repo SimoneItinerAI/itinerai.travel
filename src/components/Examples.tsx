@@ -6,6 +6,7 @@ type Spotlight = { id: string; gradient: string; trips: Trip[] };
 
 function SpotlightCard({ trips, gradient }: { trips: Trip[]; gradient: string }) {
   const [index, setIndex] = useState(0);
+  const [fadingOut, setFadingOut] = useState(false);
   const [paused, setPaused] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const intervalRef = useRef<number | null>(null);
@@ -25,7 +26,11 @@ function SpotlightCard({ trips, gradient }: { trips: Trip[]; gradient: string })
     if (reduceMotion || paused) return;
     if (intervalRef.current) window.clearInterval(intervalRef.current);
     intervalRef.current = window.setInterval(() => {
-      setIndex(i => (i + 1) % trips.length);
+      setFadingOut(true);
+      window.setTimeout(() => {
+        setIndex(i => (i + 1) % trips.length);
+        setFadingOut(false);
+      }, 300);
     }, 5000);
     return () => { if (intervalRef.current) window.clearInterval(intervalRef.current); };
   }, [reduceMotion, paused, trips.length]);
@@ -40,9 +45,10 @@ function SpotlightCard({ trips, gradient }: { trips: Trip[]; gradient: string })
     >
       <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-20 group-hover:opacity-30 transition-opacity duration-300`}></div>
       <style>{`
-        @keyframes fadeSoftIn { 0%{opacity:0; transform:translateY(6px) rotateZ(-1.5deg) scale(0.995)} 50%{opacity:.7} 100%{opacity:1; transform:translateY(0) rotateZ(0) scale(1)} }
+        @keyframes fadeInSoft { 0%{opacity:0; transform:translateY(4px)} 100%{opacity:1; transform:translateY(0)} }
+        @keyframes fadeOutSoft { 0%{opacity:1; transform:translateY(0)} 100%{opacity:0; transform:translateY(4px)} }
       `}</style>
-      <div key={`${current.title}-${index}`} className="relative p-8" style={reduceMotion ? undefined : { animation: 'fadeSoftIn 640ms cubic-bezier(0.22, 1, 0.36, 1)', willChange: 'transform, opacity' }}>
+      <div key={`${current.title}-${index}`} className="relative p-8" style={reduceMotion ? undefined : { animation: `${fadingOut ? 'fadeOutSoft 300ms ease-out' : 'fadeInSoft 300ms ease-in'}`, willChange: 'transform, opacity' }}>
         <div className="flex items-center gap-2 text-sm text-brand-blue mb-4">
           <Clock className="w-4 h-4" />
           <span>{current.days}</span>
@@ -78,7 +84,7 @@ export default function Examples({ onStart }: { onStart?: (p: ItineraryParams) =
       id: 'coast',
       gradient: 'from-brand-blue to-brand-teal',
       trips: [
-        { days: '5 giorni', title: 'Tour della Costiera Amalfitana', subtitle: 'Paesaggi, limoni e viste mozzafiato' },
+        { days: '5 giorni', title: 'Costiera Amalfitana', subtitle: 'Paesaggi, limoni e viste mozzafiato' },
         { days: '4 giorni', title: 'Weekend a Capri', subtitle: 'Faraglioni, mare cristallino e relax' },
       ],
     },
@@ -86,7 +92,7 @@ export default function Examples({ onStart }: { onStart?: (p: ItineraryParams) =
       id: 'long-haul',
       gradient: 'from-brand-orange to-brand-teal',
       trips: [
-        { days: '3 giorni', title: 'Weekend a Tokyo', subtitle: 'Tradizione e futuro in equilibrio perfetto' },
+        { days: '3 giorni', title: '10 giorni a Tokyo', subtitle: 'Tradizione e futuro in equilibrio' },
         { days: '7 giorni', title: 'Settimana a New York', subtitle: 'Skyline, Broadway e Central Park' },
       ],
     },
@@ -94,10 +100,10 @@ export default function Examples({ onStart }: { onStart?: (p: ItineraryParams) =
 
   return (
     <section
-      className="ExamplesSection relative py-24 px-6 text-white"
+      className="ExamplesSection relative py-24 px-6 text-white bg-fixed"
       style={{ backgroundImage: "url('/ispiratiepartisection.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900/70 to-slate-800/60"></div>
+      <div className="absolute inset-0 bg-transparent backdrop-blur-sm"></div>
       <div className="relative z-10 max-w-6xl mx-auto">
         <h2 className="text-4xl md:text-5xl font-bold text-center mb-6">
           Ispirati e <span className="text-brand-orange">parti</span>

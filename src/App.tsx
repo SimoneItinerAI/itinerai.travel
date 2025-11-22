@@ -7,7 +7,6 @@ import HowItWorks from './components/HowItWorks';
 import WhyChoose from './components/WhyChoose';
 import Examples from './components/Examples';
 import DemoTryIt from './components/DemoTryIt';
-import Technology from './components/Technology';
 import FinalCTA from './components/FinalCTA';
 import Footer from './components/Footer';
 import Aura from './components/Aura';
@@ -100,7 +99,6 @@ function App() {
         startItineraryGeneration(p, () => { setDest(p.destination); setView('proposals'); });
       }} />
       </section>
-      <Technology />
       <FinalCTA onStart={(p: ItineraryParams) => {
         startItineraryGeneration(p, () => { setDest(p.destination); setView('proposals'); });
       }} />

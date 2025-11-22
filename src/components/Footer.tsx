@@ -1,4 +1,4 @@
-import { Compass, Instagram, Linkedin, Twitter } from 'lucide-react';
+import { Instagram, Linkedin, Twitter } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -6,10 +6,10 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col items-center text-center mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-brand-orange to-brand-blue rounded-xl flex items-center justify-center">
-              <Compass className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 rounded-xl overflow-hidden">
+              <img src="/logo.png?v=20251113" alt="ItinerAI" className="w-10 h-10 object-contain" />
             </div>
-            <span className="text-2xl font-bold">ItinerAI</span>
+            <span className="text-2xl font-bold">Itiner<span className="text-brand-orange">AI</span></span>
           </div>
           <p className="text-slate-400 text-lg">
             Il tuo compagno di viaggio intelligente
@@ -63,7 +63,7 @@ export default function Footer() {
         </div>
 
         <div className="text-center text-slate-500 text-sm pt-8 border-t border-slate-800">
-          <p>© 2024 ItinerAI. Tutti i diritti riservati.</p>
+          <p>© 2025 ItinerAI. Tutti i diritti riservati.</p>
         </div>
       </div>
     </footer>
