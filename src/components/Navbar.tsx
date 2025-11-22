@@ -16,7 +16,14 @@ export default function Navbar() {
 
   const handleNavClick = (id: string) => {
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (id === 'hero-search-container') {
+      setTimeout(() => {
+        const input = el.querySelector('input[type="text"]') as HTMLInputElement | null;
+        input?.focus();
+      }, 400);
+    }
   };
 
   return (
@@ -32,7 +39,7 @@ export default function Navbar() {
             <button type="button" onClick={() => handleNavClick('examples')} className="text-white/70 hover:text-brand-orange transition">Esempi</button>
             <button type="button" onClick={() => handleNavClick('contact')} className="text-white/70 hover:text-brand-orange transition">Contatti</button>
           </nav>
-          <button type="button" onClick={() => handleNavClick('try')} className="bg-gradient-to-r from-brand-orange to-brand-orangelight text-white px-5 py-2 rounded-full font-medium shadow hover:from-brand-orangelight hover:to-brand-orange transition">Crea Itinerario</button>
+          <button type="button" onClick={() => handleNavClick('hero-search-container')} className="bg-gradient-to-r from-brand-orange to-brand-orangelight text-white px-5 py-2 rounded-full font-medium shadow hover:from-brand-orangelight hover:to-brand-orange transition">Crea Itinerario</button>
         </div>
       </div>
     </header>

@@ -624,7 +624,7 @@ export default function Hero({ onStart, onDatePickerToggle, datePickerState }: {
         <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight tracking-tight">
           Pianifica.
           <br />
-          <span className="text-transparent bg-gradient-to-r from-orange-500 via-blue-400 to-orange-500 bg-clip-text pulse-text">
+          <span className="text-transparent bg-gradient-to-r from-orange-500 via-blue-400 to-orange-500 bg-clip-text heartbeat-text">
             Esplora. Vivi.
           </span>
           <br />
@@ -642,7 +642,7 @@ export default function Hero({ onStart, onDatePickerToggle, datePickerState }: {
 
         <div id="hero-search-container" className="mx-auto max-w-[45rem] w-full relative">
           <div className="w-full flex flex-col items-center gap-3 md:gap-4 bg-white/8 md:bg-white/5 backdrop-blur-md p-4 md:p-5 rounded-2xl border border-white/20 md:hover:border-orange-500/50 shadow-md transition-all">
-            <style>{`@media (prefers-reduced-motion: reduce){ .cursor-hero{ animation: none !important; opacity: 1 !important; } .pulse-text{ animation: none !important; } }`}</style>
+            <style>{`@media (prefers-reduced-motion: reduce){ .cursor-hero{ animation: none !important; opacity: 1 !important; } .pulse-text{ animation: none !important; } .heartbeat-text{ animation: none !important; } }`}</style>
             <style>{`
               .stepper-btn { color: #e5e7eb; background: rgba(255,255,255,.10); }
               .stepper-btn:hover { background: rgba(255,255,255,.20); }
@@ -651,6 +651,8 @@ export default function Hero({ onStart, onDatePickerToggle, datePickerState }: {
               .stepper-people { background-image: linear-gradient(90deg,#3B82F6 0%,#14B8A6 100%); }
               @keyframes pulseText { 0%,100%{ transform: scale(1); text-shadow: 0 0 0 rgba(255,255,255,0); } 50%{ transform: scale(1.01); text-shadow: 0 0 14px rgba(255,255,255,.18);} }
               .pulse-text { display: inline-block; animation: pulseText 3.2s ease-in-out infinite; will-change: transform, text-shadow; }
+              @keyframes heartbeatPulse { 0%{ transform:scale(1); text-shadow:0 0 0 rgba(255,255,255,0)} 8%{ transform:scale(1.08); text-shadow:0 0 18px rgba(255,255,255,.25)} 16%{ transform:scale(1)} 24%{ transform:scale(1.06); text-shadow:0 0 14px rgba(255,255,255,.18)} 32%{ transform:scale(1)} 100%{ transform:scale(1); text-shadow:0 0 0 rgba(255,255,255,0)} }
+              .heartbeat-text { display:inline-block; animation: heartbeatPulse 1.6s cubic-bezier(.4,0,.2,1) infinite; will-change: transform, text-shadow; transform-origin: center; }
             `}</style>
             <DestinationTypewriter />
           <div className="autocomplete-container relative w-full">

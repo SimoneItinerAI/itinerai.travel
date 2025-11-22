@@ -63,8 +63,9 @@ export default function DemoTryIt({ onStart: _onStart }: { onStart?: (p: Itinera
  
 
   return (
-    <section ref={sectionRef} className="py-24 px-6 bg-gradient-to-br from-slate-900 to-brand-navy text-white">
-      <div className="max-w-5xl mx-auto">
+    <section ref={sectionRef} className="relative overflow-hidden py-24 px-6 bg-gradient-to-br from-slate-900 to-brand-navy text-white">
+      <div className="absolute inset-0 bg-gradient-radial from-brand-orange/20 via-transparent to-transparent opacity-50"></div>
+      <div className="relative z-10 max-w-5xl mx-auto">
         <h2 className="text-4xl md:text-5xl font-bold text-center mb-6">
           Prova <span className="text-transparent bg-gradient-to-r from-brand-orangelight to-brand-blue bg-clip-text">subito</span>
         </h2>
