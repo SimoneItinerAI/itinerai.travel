@@ -635,9 +635,11 @@ export default function Hero({ onStart, onDatePickerToggle, datePickerState }: {
           </span>
         </h1>
 
-        <p className="text-xl md:text-2xl text-slate-300 mb-12 max-w-2xl mx-auto leading-relaxed">
-          <span className="font-semibold">Inserisci una destinazione, le date e il numero di persone.</span>
-          <span className="block mt-2">ItinerAI genera un itinerario <span className="text-transparent bg-gradient-to-r from-brand-blue/90 to-brand-teal/90 bg-clip-text font-medium filter drop-shadow-sm md:drop-shadow-lg md:from-white/95 md:to-white/95">giorno per giorno</span> con voli, hotel, attività e tanto altro con <span className="text-transparent bg-gradient-to-r from-brand-orange/90 to-brand-orangelight/90 bg-clip-text font-medium filter drop-shadow-sm md:drop-shadow-lg md:from-white/95 md:to-white/95">link pronti alla prenotazione</span>.</span>
+        <p className="text-xl md:text-2xl text-slate-300 mb-12 max-w-2xl mx-auto">
+          <span className="font-semibold"><span className="text-brand-orange">ItinerAI</span> genera un itinerario:</span>
+          <span className="block mt-1">non solo <span className="text-transparent bg-gradient-to-r from-brand-blue/90 to-brand-teal/90 bg-clip-text">idee</span>,</span>
+          <span className="block mt-1">ma <span className="text-transparent bg-gradient-to-r from-brand-orange/90 to-brand-orangelight/90 bg-clip-text">link pronti</span> alla prenotazione</span>
+          <span className="block mt-1">con i principali <span className="text-transparent bg-gradient-to-r from-brand-blue/90 to-brand-teal/90 bg-clip-text">portali di viaggio</span></span>
         </p>
 
         <div id="hero-search-container" className="mx-auto max-w-[45rem] w-full relative">
