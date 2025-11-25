@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Hero from './components/Hero';
 import Proposals from './components/Proposals';
+import ItineraryPage from './pages/ItineraryPage';
 import Navbar from './components/Navbar';
 import WhatIsItinerAI from './components/WhatIsItinerAI';
 import HowItWorks from './components/HowItWorks';
@@ -11,11 +12,12 @@ import FinalCTA from './components/FinalCTA';
 import Footer from './components/Footer';
 import Aura from './components/Aura';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { startItineraryGeneration, type ItineraryParams } from './utils/itinerary';
+import { type ItineraryParams, saveTripParams, clearLastItinerary } from './utils/itinerary';
+import type { TripParams } from './types/trip';
 import EnhancedDatePicker from './components/EnhancedDatePicker';
 
 function App() {
-  const [view, setView] = useState<'home' | 'proposals'>('home');
+  const [view, setView] = useState<'home' | 'itinerary' | 'proposals'>('home');
   const [dest, setDest] = useState('');
   const [datePickerState, setDatePickerState] = useState<{
     isOpen: boolean;
@@ -57,10 +59,42 @@ function App() {
     }
   }, [datePickerState.isOpen]);
 
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path === '/itinerario') setView('itinerary');
+    else if (path === '/proposte') setView('proposals');
+    else setView('home');
+    const onPop = () => {
+      const p = window.location.pathname;
+      if (p === '/itinerario') setView('itinerary');
+      else if (p === '/proposte') setView('proposals');
+      else setView('home');
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  const navigate = (path: string) => {
+    if (window.location.pathname !== path) window.history.pushState({}, '', path);
+    if (path === '/itinerario') setView('itinerary');
+    else if (path === '/proposte') setView('proposals');
+    else setView('home');
+  };
+
   if (view === 'proposals') {
     return (
       <div className="min-h-screen bg-white">
-        <Proposals destination={dest} onBack={() => setView('home')} />
+        <Proposals destination={dest} onBack={() => navigate('/itinerario')} />
+        <Footer />
+        <SpeedInsights />
+      </div>
+    );
+  }
+
+  if (view === 'itinerary') {
+    return (
+      <div className="min-h-screen bg-white">
+        <ItineraryPage onNavigateProposals={() => navigate('/proposte')} onNavigateHome={() => navigate('/')} />
         <Footer />
         <SpeedInsights />
       </div>
@@ -72,7 +106,11 @@ function App() {
       <Navbar />
       <Hero 
         onStart={(p: ItineraryParams) => {
-          startItineraryGeneration(p, () => { setDest(p.destination); setView('proposals'); });
+          const tp: TripParams = { destination: p.destination, startDate: p.startDate ?? '', endDate: p.endDate ?? '', days: p.days, people: p.people };
+          saveTripParams(tp);
+          clearLastItinerary();
+          setDest(p.destination);
+          navigate('/itinerario');
         }}
         onDatePickerToggle={(isOpen) => {
           setDatePickerState(prev => ({ ...prev, isOpen }));
@@ -91,16 +129,28 @@ function App() {
       <WhyChoose />
       <section id="examples" className="scroll-mt-24">
       <Examples onStart={(p: ItineraryParams) => {
-        startItineraryGeneration(p, () => { setDest(p.destination); setView('proposals'); });
+        const tp: TripParams = { destination: p.destination, startDate: p.startDate ?? '', endDate: p.endDate ?? '', days: p.days, people: p.people };
+        saveTripParams(tp);
+        clearLastItinerary();
+        setDest(p.destination);
+        navigate('/itinerario');
       }} />
       </section>
       <section id="try" className="scroll-mt-24">
       <DemoTryIt onStart={(p: ItineraryParams) => {
-        startItineraryGeneration(p, () => { setDest(p.destination); setView('proposals'); });
+        const tp: TripParams = { destination: p.destination, startDate: p.startDate ?? '', endDate: p.endDate ?? '', days: p.days, people: p.people };
+        saveTripParams(tp);
+        clearLastItinerary();
+        setDest(p.destination);
+        navigate('/itinerario');
       }} />
       </section>
       <FinalCTA onStart={(p: ItineraryParams) => {
-        startItineraryGeneration(p, () => { setDest(p.destination); setView('proposals'); });
+        const tp: TripParams = { destination: p.destination, startDate: p.startDate ?? '', endDate: p.endDate ?? '', days: p.days, people: p.people };
+        saveTripParams(tp);
+        clearLastItinerary();
+        setDest(p.destination);
+        navigate('/itinerario');
       }} />
       <section id="contact" className="scroll-mt-24">
         <Footer />

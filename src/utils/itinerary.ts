@@ -83,3 +83,199 @@ export function forceGenerateItinerary(params: ItineraryParams) {
   const data = generateMockItinerary(params);
   saveItineraryToStorage(data);
 }
+
+// -------------------- V2 API (TripParams/Itinerary full) --------------------
+import type { TripParams, Itinerary as FullItinerary, ItineraryDay as FullItineraryDay, CityPoi, ItineraryDayItem } from '../types/trip';
+import { geocodeCity as geocodeCityOSM } from '../services/nominatim';
+import { fetchAttractions } from '../services/overpass';
+
+const STORAGE_TRIP_PARAMS = 'itinerai:last-tripparams';
+const STORAGE_FULL_ITINERARY = 'itinerai:last-itinerary';
+
+export function saveTripParams(params: TripParams) {
+  try {
+    localStorage.setItem(STORAGE_TRIP_PARAMS, JSON.stringify(params));
+  } catch (e) {
+    console.warn('Unable to save trip params', e);
+  }
+}
+
+export function loadTripParams(): TripParams | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_TRIP_PARAMS);
+    if (!raw) return null;
+    return JSON.parse(raw) as TripParams;
+  } catch (e) {
+    console.warn('Unable to load trip params', e);
+    return null;
+  }
+}
+
+export function createItineraryFromParams(params: TripParams): FullItinerary {
+  const days: FullItineraryDay[] = Array.from({ length: Math.max(1, params.days) }).map((_, i) => {
+    const idx = i + 1;
+    const titleBase = idx === 1 ? 'Centro storico' : idx === 2 ? 'Musei e cultura' : 'Quartieri caratteristici';
+    const dateStr = params.startDate ? new Date(new Date(params.startDate).getTime() + i * 86400000).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' }) : `Giorno ${idx}`;
+    const items: FullItineraryDay['items'] = [
+      { timeOfDay: 'morning', description: idx === 1 ? 'Arrivo e sistemazione' : 'Colazione in zona vivace' },
+      { timeOfDay: 'afternoon', description: titleBase },
+      { timeOfDay: 'evening', description: 'Cena tipica' },
+    ];
+    return { dayIndex: idx, title: `${dateStr} — ${titleBase}`, items };
+  });
+  const summaryTitle = `${params.destination} per ${params.people} ${params.people === 1 ? 'persona' : 'persone'} ${params.days} ${params.days === 1 ? 'giorno' : 'giorni'}`;
+  return { params, summaryTitle, days };
+}
+
+export function saveLastItinerary(itinerary: FullItinerary) {
+  try {
+    localStorage.setItem(STORAGE_FULL_ITINERARY, JSON.stringify(itinerary));
+  } catch (e) {
+    console.warn('Unable to save full itinerary', e);
+  }
+  try {
+    const preview = generateMockItinerary({ destination: itinerary.params.destination, days: itinerary.params.days, people: itinerary.params.people, startDate: itinerary.params.startDate, endDate: itinerary.params.endDate });
+    saveItineraryToStorage(preview);
+  } catch (e) {
+    console.warn('Unable to save preview itinerary', e);
+  }
+}
+
+export function loadLastItinerary(): FullItinerary | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_FULL_ITINERARY);
+    if (!raw) return null;
+    return JSON.parse(raw) as FullItinerary;
+  } catch (e) {
+    console.warn('Unable to load full itinerary', e);
+    return null;
+  }
+}
+
+export function regenerateDay(itinerary: FullItinerary, dayIndex: number): FullItinerary {
+  const idx = dayIndex - 1;
+  if (idx < 0 || idx >= itinerary.days.length) return itinerary;
+  const params = itinerary.params;
+  const newDay = createItineraryFromParams({ ...params, days: Math.max(params.days, dayIndex) }).days[idx];
+  const next: FullItinerary = { ...itinerary, days: itinerary.days.map((d, i) => (i === idx ? newDay : d)) };
+  saveLastItinerary(next);
+  return next;
+}
+
+export async function regenerateDayCity(itinerary: FullItinerary, dayIndex: number): Promise<FullItinerary> {
+  const idx = dayIndex - 1;
+  if (idx < 0 || idx >= itinerary.days.length) return itinerary;
+  const params = itinerary.params;
+  const geo = await geocodeCityOSM(params.destination);
+  if (!geo) return itinerary;
+  const radius = Math.max(8000, Math.min(22000, 10000 + (params.days || 1) * 1500));
+  const attractions = await fetchAttractions(geo.lat, geo.lon, radius, Math.max(20, params.days * 6));
+  const currentDay = itinerary.days[idx];
+  const usedIdsInDay = new Set((currentDay.items || []).map(it => it.poiId).filter(Boolean) as string[]);
+  const usedIdsAll = new Set((itinerary.poisUsed || []).map(p => p.id));
+  const toPoi = (a: { id?: string | number; name?: string; lat?: number; lon?: number }): CityPoi => ({ id: String(a.id ?? `${a.lat}-${a.lon}`), name: a.name ?? 'Punto di interesse', lat: (a.lat as number) ?? geo.lat, lon: (a.lon as number) ?? geo.lon });
+  const pool: CityPoi[] = attractions.map(toPoi);
+  const fresh = pool.filter(p => !usedIdsInDay.has(p.id) && !usedIdsAll.has(p.id));
+  const fallback = pool.filter(p => !usedIdsInDay.has(p.id));
+  const pickFrom = (fresh.length >= 3 ? fresh : fallback);
+  // Shuffle to vary results
+  for (let i = pickFrom.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pickFrom[i], pickFrom[j]] = [pickFrom[j], pickFrom[i]]; }
+  const slice = pickFrom.slice(0, Math.max(3, Math.min(5, pickFrom.length)));
+  const title = makeDayTitle(dayIndex, slice, params.destination);
+  const items: ItineraryDayItem[] = slice.map((poi, index) => ({ timeOfDay: index === 0 ? 'morning' : index === 1 ? 'afternoon' : 'evening', description: `Visita a ${poi.name}${poi.category ? ` (${poi.category})` : ''}`, poiId: poi.id }));
+  const firstPoiReg = slice[0];
+  const secondPoiReg = slice[1] ?? slice[slice.length - 1];
+  if (firstPoiReg) { items.push({ description: `Attività consigliata: tour guidato nei dintorni di ${firstPoiReg.name}` }); }
+  if (secondPoiReg && (!firstPoiReg || secondPoiReg.id !== firstPoiReg.id)) {
+    items.push({ description: `Esperienza consigliata: visita guidata a ${secondPoiReg.name}` });
+  } else if (firstPoiReg) {
+    items.push({ description: `Esperienza consigliata: visita guidata nel centro storico di ${params.destination}` });
+  }
+  const updatedDay: FullItineraryDay = { dayIndex, title, items };
+  const updatedPoisUsed = Array.from(new Map([...(itinerary.poisUsed || []), ...slice].map(p => [p.id, p])).values());
+  const next: FullItinerary = { ...itinerary, days: itinerary.days.map((d, i) => (i === idx ? updatedDay : d)), poisUsed: updatedPoisUsed };
+  saveLastItinerary(next);
+  return next;
+}
+
+export function clearLastItinerary() {
+  try {
+    localStorage.removeItem(STORAGE_FULL_ITINERARY);
+  } catch (e) {
+    console.warn('Unable to clear full itinerary', e);
+  }
+}
+
+export function sameParams(a: TripParams, b: TripParams): boolean {
+  return (
+    a.destination.trim().toLowerCase() === b.destination.trim().toLowerCase() &&
+    a.startDate === b.startDate &&
+    a.endDate === b.endDate &&
+    a.people === b.people
+  );
+}
+
+export async function buildItineraryForCity(params: TripParams): Promise<FullItinerary> {
+  const geo = await geocodeCityOSM(params.destination);
+  if (!geo) throw new Error('Geocoding failed');
+  const radius2 = Math.max(8000, Math.min(22000, 10000 + (params.days || 1) * 1500));
+  let attractions = await fetchAttractions(geo.lat, geo.lon, radius2, Math.max(16, params.days * 5));
+  if (!attractions || attractions.length === 0) {
+    attractions = await fetchAttractions(geo.lat, geo.lon, Math.min(40000, radius2 * 2), Math.max(24, params.days * 6));
+  }
+  const pois: CityPoi[] = attractions.map((a) => ({
+    id: String(a.id ?? `${a.lat}-${a.lon}`),
+    name: a.name ?? 'Punto di interesse',
+    lat: a.lat ?? geo.lat,
+    lon: a.lon ?? geo.lon,
+  }));
+  const sorted = [...pois].sort((a, b) => (b.importance ?? 0) - (a.importance ?? 0));
+  const days = distributePoisAcrossDays(sorted, params);
+  const summaryTitle = `${params.destination} per ${params.people} ${params.people === 1 ? 'persona' : 'persone'} ${params.days} ${params.days === 1 ? 'giorno' : 'giorni'}`;
+  const summarySubtitle = `Dal ${params.startDate} al ${params.endDate}`;
+  return { params, summaryTitle, summarySubtitle, days, poisUsed: sorted };
+}
+
+function distributePoisAcrossDays(pois: CityPoi[], params: TripParams): FullItineraryDay[] {
+  const daysCount = Math.max(1, params.days || 1);
+  if (pois.length === 0) {
+    return Array.from({ length: daysCount }).map((_, idx) => ({
+      dayIndex: idx + 1,
+      title: `Giorno ${idx + 1} — Esplora ${params.destination}`,
+      items: [{ description: `Giornata libera per esplorare ${params.destination}` }],
+    }));
+  }
+  const shuffled = [...pois];
+  for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
+  const poisPerDay = Math.max(3, Math.ceil(shuffled.length / daysCount));
+  const days: FullItineraryDay[] = [];
+  for (let day = 0; day < daysCount; day++) {
+    const start = day * poisPerDay;
+    const slice = shuffled.slice(start, start + poisPerDay);
+    const title = makeDayTitle(day + 1, slice, params.destination);
+    const items: ItineraryDayItem[] = slice.map((poi, index) => ({
+      timeOfDay: index === 0 ? 'morning' : index === 1 ? 'afternoon' : 'evening',
+      description: `Visita a ${poi.name}${poi.category ? ` (${poi.category})` : ''}`,
+      poiId: poi.id,
+    }));
+    const firstPoi = slice[0];
+    const secondPoi = slice[1] ?? slice[slice.length - 1];
+    if (firstPoi) {
+      items.push({ description: `Attività consigliata: tour guidato nei dintorni di ${firstPoi.name}` });
+    }
+    if (secondPoi && (!firstPoi || secondPoi.id !== firstPoi.id)) {
+      items.push({ description: `Esperienza consigliata: visita guidata a ${secondPoi.name}` });
+    } else if (firstPoi) {
+      items.push({ description: `Esperienza consigliata: visita guidata nel centro storico di ${params.destination}` });
+    }
+    days.push({ dayIndex: day + 1, title, items });
+  }
+  return days;
+}
+
+function makeDayTitle(dayIndex: number, pois: CityPoi[], destination: string): string {
+  if (!pois.length) return `Giorno ${dayIndex} — Esplora ${destination}`;
+  const topNames = pois.slice(0, 3).map((p) => p.name);
+  const joined = topNames.length === 1 ? topNames[0] : topNames.length === 2 ? topNames.join(' e ') : `${topNames[0]}, ${topNames[1]} e altri luoghi`;
+  return `Giorno ${dayIndex} — ${joined}`;
+}
