@@ -108,7 +108,6 @@ function App() {
           const tp: TripParams = { destination: p.destination, startDate: p.startDate ?? '', endDate: p.endDate ?? '', days: p.days, people: p.people };
           saveTripParams(tp);
           clearLastItinerary();
-          setDest(p.destination);
           const url = new URL('/itinerario', window.location.origin).toString();
           window.open(url, '_blank', 'noopener');
         }}
@@ -132,7 +131,6 @@ function App() {
         const tp: TripParams = { destination: p.destination, startDate: p.startDate ?? '', endDate: p.endDate ?? '', days: p.days, people: p.people };
         saveTripParams(tp);
         clearLastItinerary();
-        setDest(p.destination);
         navigate('/itinerario');
       }} />
       </section>
@@ -141,7 +139,6 @@ function App() {
         const tp: TripParams = { destination: p.destination, startDate: p.startDate ?? '', endDate: p.endDate ?? '', days: p.days, people: p.people };
         saveTripParams(tp);
         clearLastItinerary();
-        setDest(p.destination);
         navigate('/itinerario');
       }} />
       </section>
@@ -149,7 +146,6 @@ function App() {
         const tp: TripParams = { destination: p.destination, startDate: p.startDate ?? '', endDate: p.endDate ?? '', days: p.days, people: p.people };
         saveTripParams(tp);
         clearLastItinerary();
-        setDest(p.destination);
         navigate('/itinerario');
       }} />
       <section id="contact" className="scroll-mt-24">
