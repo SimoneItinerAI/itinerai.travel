@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { TripParams, Itinerary } from '../types/trip';
-import { parseSearchParams } from '../lib/searchParams';
-import { loadLastItinerary, forceGenerateItinerary, saveTripParams } from '../utils/itinerary';
+import { loadTripParams, loadLastItinerary, forceGenerateItinerary, saveTripParams } from '../utils/itinerary';
 import ProposalsHeader from './proposals/ProposalsHeader';
 import FlightsCard from './proposals/FlightsCard';
 import AccommodationCard from './proposals/AccommodationCard';
@@ -17,7 +16,7 @@ export default function Proposals({ onBack }: ProposalsProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const currentParams = parseSearchParams();
+    const currentParams = loadTripParams();
     const lastItinerary = loadLastItinerary();
 
     if (!currentParams) {
