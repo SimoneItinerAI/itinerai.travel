@@ -73,29 +73,6 @@ export default function ItineraryTimeline({ itinerary, onUpdate }: ItineraryTime
           </div>
         ))}
       </div>
-
-      <div className="mt-12 pt-8 border-t border-slate-200">
-        <div className="bg-gradient-to-br from-slate-50 to-white rounded-2xl border border-slate-200 p-8 text-center">
-          <h3 className="text-xl font-bold text-slate-900 mb-3">
-            Pronto per prenotare?
-          </h3>
-          <p className="text-slate-600 mb-6 max-w-2xl mx-auto">
-            Ora che hai il tuo itinerario personalizzato, scopri le proposte complete di voli, alloggi e attività.
-          </p>
-          <button
-            onClick={() => {
-              const event = new CustomEvent('navigate-to-proposals');
-              window.dispatchEvent(event);
-            }}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-brand-orange to-brand-orangelight hover:from-brand-orangelight hover:to-brand-orange text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            <span>Vedi le proposte di viaggio</span>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </button>
-        </div>
-      </div>
     </div>
   );
 }

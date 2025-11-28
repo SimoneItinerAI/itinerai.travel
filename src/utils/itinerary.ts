@@ -245,29 +245,74 @@ function distributePoisAcrossDays(pois: CityPoi[], params: TripParams): FullItin
       items: [{ description: `Giornata libera per esplorare ${params.destination}` }],
     }));
   }
+
   const shuffled = [...pois];
-  for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
-  const poisPerDay = Math.max(3, Math.ceil(shuffled.length / daysCount));
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  const poisPerDay = Math.max(4, Math.ceil(shuffled.length / daysCount));
   const days: FullItineraryDay[] = [];
+
+  const experienceTypes = [
+    'tour gastronomico locale',
+    'passeggiata fotografica',
+    'lezione di cucina tradizionale',
+    'degustazione vini e prodotti locali',
+    'tour in bicicletta',
+    'visita ai mercati storici',
+    'aperitivo con vista panoramica',
+    'concerto o spettacolo locale',
+  ];
+
   for (let day = 0; day < daysCount; day++) {
     const start = day * poisPerDay;
     const slice = shuffled.slice(start, start + poisPerDay);
     const title = makeDayTitle(day + 1, slice, params.destination);
-    const items: ItineraryDayItem[] = slice.map((poi, index) => ({
-      timeOfDay: index === 0 ? 'morning' : index === 1 ? 'afternoon' : 'evening',
-      description: `Visita a ${poi.name}${poi.category ? ` (${poi.category})` : ''}`,
-      poiId: poi.id,
-    }));
-    const firstPoi = slice[0];
-    const secondPoi = slice[1] ?? slice[slice.length - 1];
-    if (firstPoi) {
-      items.push({ description: `Attività consigliata: tour guidato nei dintorni di ${firstPoi.name}` });
+    const items: ItineraryDayItem[] = [];
+
+    if (slice.length > 0) {
+      const iconicPoi = slice[0];
+      items.push({
+        timeOfDay: 'morning',
+        description: `🏛️ Luogo iconico: ${iconicPoi.name}${iconicPoi.category ? ` - ${iconicPoi.category}` : ''}`,
+        poiId: iconicPoi.id,
+      });
     }
-    if (secondPoi && (!firstPoi || secondPoi.id !== firstPoi.id)) {
-      items.push({ description: `Esperienza consigliata: visita guidata a ${secondPoi.name}` });
-    } else if (firstPoi) {
-      items.push({ description: `Esperienza consigliata: visita guidata nel centro storico di ${params.destination}` });
+
+    if (slice.length > 1) {
+      const culturalPoi = slice[1];
+      items.push({
+        timeOfDay: 'afternoon',
+        description: `🎨 Esperienza culturale: ${culturalPoi.name}`,
+        poiId: culturalPoi.id,
+      });
     }
+
+    if (slice.length > 2) {
+      const hiddenPoi = slice[slice.length - 1];
+      items.push({
+        timeOfDay: 'afternoon',
+        description: `💎 Gemma nascosta: ${hiddenPoi.name} - Un luogo autentico lontano dalle folle turistiche`,
+        poiId: hiddenPoi.id,
+      });
+    }
+
+    const experience = experienceTypes[day % experienceTypes.length];
+    items.push({
+      timeOfDay: 'evening',
+      description: `✨ Esperienza locale: ${experience}`,
+    });
+
+    if (slice.length > 3) {
+      const extraPoi = slice[2];
+      items.push({
+        description: `📍 Tappa extra: ${extraPoi.name}`,
+        poiId: extraPoi.id,
+      });
+    }
+
     days.push({ dayIndex: day + 1, title, items });
   }
   return days;
@@ -275,7 +320,15 @@ function distributePoisAcrossDays(pois: CityPoi[], params: TripParams): FullItin
 
 function makeDayTitle(dayIndex: number, pois: CityPoi[], destination: string): string {
   if (!pois.length) return `Giorno ${dayIndex} — Esplora ${destination}`;
-  const topNames = pois.slice(0, 3).map((p) => p.name);
-  const joined = topNames.length === 1 ? topNames[0] : topNames.length === 2 ? topNames.join(' e ') : `${topNames[0]}, ${topNames[1]} e altri luoghi`;
-  return `Giorno ${dayIndex} — ${joined}`;
+  const dayThemes = [
+    'Luoghi iconici e storia',
+    'Cultura e tradizioni locali',
+    'Sapori e quartieri autentici',
+    'Natura e panorami',
+    'Arte e architettura',
+    'Mercati e vita locale',
+    'Relax e scoperte nascoste'
+  ];
+  const theme = dayThemes[(dayIndex - 1) % dayThemes.length];
+  return `Giorno ${dayIndex} — ${theme}`;
 }
