@@ -110,7 +110,8 @@ function App() {
           saveTripParams(tp);
           clearLastItinerary();
           setDest(p.destination);
-          navigate('/itinerario');
+          const url = new URL('/itinerario', window.location.origin).toString();
+          window.open(url, '_blank', 'noopener');
         }}
         onDatePickerToggle={(isOpen) => {
           setDatePickerState(prev => ({ ...prev, isOpen }));
@@ -179,7 +180,8 @@ function App() {
                 end={datePickerState.endDate}
                 onClose={() => setDatePickerState(prev => ({ ...prev, isOpen: false }))}
                 onSelectRange={(startDate, endDate) => {
-                  const calculatedDays = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1;
+                  const parseLocal = (s: string) => { const [y,m,d] = s.split('-').map(Number); return new Date(y, (m||1)-1, d||1); };
+                  const calculatedDays = Math.ceil((parseLocal(endDate).getTime() - parseLocal(startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1;
                   setDatePickerState(prev => ({
                     ...prev,
                     startDate,

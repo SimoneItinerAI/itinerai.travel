@@ -17,6 +17,21 @@ interface EnhancedDatePickerProps {
   locale?: string
 }
 
+export function parseLocalISOString(s?: string | null) {
+  if (!s) return null
+  const m = /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/.exec(s.trim())
+  if (!m) return null
+  const y = Number(m[1]); const mm = Number(m[2]) - 1; const d = Number(m[3])
+  return new Date(y, mm, d)
+}
+
+export function dateToLocalISO(d: Date) {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
 export default function EnhancedDatePicker({
   open,
   start,
@@ -30,14 +45,18 @@ export default function EnhancedDatePicker({
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
-  const initialDate = start ? new Date(start) : today
+  const parseLocalISO = parseLocalISOString
+  const toLocalISO = dateToLocalISO
+
+  const initialDate = parseLocalISO(start) || today
   const [viewYear, setViewYear] = useState(initialDate.getFullYear())
   const [viewMonth, setViewMonth] = useState(initialDate.getMonth())
   const [selectedRange, setSelectedRange] = useState<DateRange>({
-    start: start ? new Date(start) : null,
-    end: end ? new Date(end) : null
+    start: parseLocalISO(start),
+    end: parseLocalISO(end)
   })
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   const closeBtnRef = useRef<HTMLButtonElement | null>(null)
   const calendarRef = useRef<HTMLDivElement | null>(null)
@@ -129,9 +148,16 @@ export default function EnhancedDatePicker({
     if (isDateDisabled(date)) return
     if (!selectedRange.start || (selectedRange.start && selectedRange.end)) {
       setSelectedRange({ start: date, end: null })
+      setErrorMsg(null)
       return
     }
-    setSelectedRange({ start: selectedRange.start, end: date })
+    const next = { start: selectedRange.start, end: date }
+    setSelectedRange(next)
+    if (next.start && next.end && isBefore(next.end, next.start)) {
+      setErrorMsg('La data di ritorno deve essere successiva alla partenza')
+    } else {
+      setErrorMsg(null)
+    }
   }
 
   // Test di funzionalità per verificare che le date siano cliccabili
@@ -210,8 +236,11 @@ export default function EnhancedDatePicker({
 
   const applyRange = () => {
     if (!selectedRange.start || !selectedRange.end) return
-    const toISO = (d: Date) => d.toISOString().slice(0, 10)
-    onSelectRange(toISO(selectedRange.start), toISO(selectedRange.end))
+    if (isBefore(selectedRange.end, selectedRange.start)) {
+      setErrorMsg('La data di ritorno deve essere successiva alla partenza')
+      return
+    }
+    onSelectRange(toLocalISO(selectedRange.start), toLocalISO(selectedRange.end))
     onClose()
   }
 
@@ -224,7 +253,8 @@ export default function EnhancedDatePicker({
     const isSelectedEnd = selectedRange.end && sameDay(date, selectedRange.end)
     const isInRange = selectedRange.start && selectedRange.end && isBetween(date, selectedRange.start, selectedRange.end)
     const isHoveredInRange = selectedRange.start && !selectedRange.end && hoveredDate && isBetween(date, selectedRange.start, hoveredDate)
-    return { isSelectedStart, isSelectedEnd, isInRange, isHoveredInRange, isDisabled: isDateDisabled(date) }
+    const invalidEndChoice = selectedRange.start && !selectedRange.end && isBefore(date, selectedRange.start)
+    return { isSelectedStart, isSelectedEnd, isInRange, isHoveredInRange, isDisabled: isDateDisabled(date) || !!invalidEndChoice }
   }
 
   if (!open) return null
@@ -349,6 +379,11 @@ export default function EnhancedDatePicker({
               <div className="font-semibold text-slate-900 dark:text-white">{formatDate(selectedRange.end)}</div>
             </div>
           </div>
+          {errorMsg && (
+            <div className="mt-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+              {errorMsg}
+            </div>
+          )}
         </div>
 
         <div className="p-4">
@@ -413,27 +448,27 @@ export default function EnhancedDatePicker({
         </div>
 
         <div className="flex items-center justify-between p-4 border-t border-slate-200 dark:border-slate-700">
-          <button
-            onClick={clearSelection}
-            className="text-sm text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors py-2 px-3"
-          >
-            Pulisci selezione
-          </button>
-          <div className="flex gap-2">
             <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              onClick={clearSelection}
+              className="text-sm text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors py-2 px-3"
             >
-              Annulla
+              Pulisci selezione
             </button>
-            <button
-              onClick={applyRange}
-              disabled={!selectedRange.start || !selectedRange.end}
-              className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-all duration-200"
-            >
-              Applica
-            </button>
-          </div>
+            <div className="flex gap-2">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              >
+                Annulla
+              </button>
+              <button
+                onClick={applyRange}
+                disabled={!selectedRange.start || !selectedRange.end || (!!selectedRange.start && !!selectedRange.end && isBefore(selectedRange.end, selectedRange.start))}
+                className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-all duration-200"
+              >
+                Applica
+              </button>
+            </div>
         </div>
       </div>
     </div>

@@ -15,6 +15,23 @@ import {
 type Wiki = { title: string; description?: string; extract?: string; thumbnailUrl?: string; pageUrl?: string };
 type EnrichedAttraction = Attraction & { wiki?: Wiki };
 
+const AIRPORTS: { code: string; city: string; name: string }[] = [
+  { code: 'MXP', city: 'Milano', name: 'Malpensa' },
+  { code: 'LIN', city: 'Milano', name: 'Linate' },
+  { code: 'BGY', city: 'Bergamo', name: 'Orio al Serio' },
+  { code: 'FCO', city: 'Roma', name: 'Fiumicino' },
+  { code: 'CIA', city: 'Roma', name: 'Ciampino' },
+  { code: 'VCE', city: 'Venezia', name: 'Marco Polo' },
+  { code: 'NAP', city: 'Napoli', name: 'Capodichino' },
+  { code: 'TRN', city: 'Torino', name: 'Caselle' },
+  { code: 'BLQ', city: 'Bologna', name: 'Guglielmo Marconi' },
+  { code: 'PSA', city: 'Pisa', name: 'Galileo Galilei' },
+  { code: 'PMO', city: 'Palermo', name: 'Falcone Borsellino' },
+  { code: 'CAG', city: 'Cagliari', name: 'Elmas' },
+  { code: 'CTA', city: 'Catania', name: 'Fontanarossa' },
+  { code: 'PRG', city: 'Praga', name: 'Václav Havel' },
+];
+
 export default function Proposals({ destination, onBack }: { destination: string; onBack?: () => void }) {
   const city = useMemo(() => {
     if (!destination) return '';
@@ -26,6 +43,17 @@ export default function Proposals({ destination, onBack }: { destination: string
   const [pois, setPois] = useState<EnrichedAttraction[]>([]);
   const [itinerary, setItinerary] = useState<Itinerary | null>(null);
   const [pageLoading, setPageLoading] = useState(true);
+  const [origin, setOrigin] = useState('');
+  const [originInput, setOriginInput] = useState('');
+  const suggestions = useMemo(() => {
+    const q = originInput.trim().toLowerCase();
+    if (q.length < 2) return [] as { code: string; city: string; name: string }[];
+    return AIRPORTS.filter(a =>
+      a.code.toLowerCase().includes(q) ||
+      a.city.toLowerCase().includes(q) ||
+      a.name.toLowerCase().includes(q)
+    ).slice(0, 6);
+  }, [originInput]);
 
   useEffect(() => {
     setItinerary(loadLastItinerary());
@@ -129,6 +157,7 @@ export default function Proposals({ destination, onBack }: { destination: string
     startDate: itinerary?.params.startDate,
     endDate: itinerary?.params.endDate,
     people: itinerary?.params.people,
+    origin: origin && origin.trim() ? origin.trim().toUpperCase() : undefined,
   });
 
   if (pageLoading || loading) {
@@ -214,7 +243,47 @@ export default function Proposals({ destination, onBack }: { destination: string
               {typeof itinerary?.params.people === 'number' && (
                 <p className="text-xs text-slate-600">Passeggeri: {itinerary.params.people}</p>
               )}
-              <a href={flightsUrl || '#'} onClick={(e)=>{ if(!flightsUrl) e.preventDefault(); }} target="_blank" rel="noopener noreferrer" className="block px-4 py-2 rounded-xl bg-gradient-to-r from-brand-blue to-brand-teal text-white font-semibold text-center">Cerca voli</a>
+              <div className="flex items-center gap-2 relative">
+                <span className="text-xs text-slate-600">Partenza</span>
+                <input
+                  value={originInput}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setOriginInput(v);
+                    const code = v.trim().toUpperCase();
+                    if (/^[A-Z]{3}$/.test(code)) setOrigin(code);
+                    else setOrigin('');
+                  }}
+                  placeholder="Es. Milano (MXP)"
+                  className="w-full md:w-56 px-3 py-1.5 text-sm rounded-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-blue"
+                />
+                {suggestions.length > 0 && (
+                  <div className="absolute left-16 top-10 z-20 w-[calc(100%-4rem)] md:w-56 rounded-xl border border-slate-200 bg-white shadow-lg">
+                    {suggestions.map(s => (
+                      <button
+                        key={s.code}
+                        type="button"
+                        onMouseDown={() => { setOrigin(s.code); setOriginInput(`${s.city} (${s.code})`); }}
+                        className="w-full text-left px-3 py-2 hover:bg-slate-50"
+                      >
+                        <span className="text-sm font-medium">{s.city} ({s.code})</span>
+                        <span className="block text-[11px] text-slate-500">{s.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <p className="text-[11px] text-slate-500">Suggerimento: usa il codice IATA (es. MXP, FCO) per risultati migliori.</p>
+              <a
+                href={flightsUrl || '#'}
+                onClick={(e)=>{ if(!flightsUrl) e.preventDefault(); }}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`block px-4 py-2 rounded-xl bg-gradient-to-r from-brand-blue to-brand-teal text-white font-semibold text-center ${!flightsUrl ? 'opacity-60 cursor-not-allowed' : ''}`}
+                aria-disabled={!flightsUrl}
+              >
+                Cerca voli
+              </a>
             </div>
           </div>
         <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
