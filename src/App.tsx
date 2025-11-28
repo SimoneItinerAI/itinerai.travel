@@ -18,7 +18,6 @@ import EnhancedDatePicker from './components/EnhancedDatePicker';
 
 function App() {
   const [view, setView] = useState<'home' | 'itinerary' | 'proposals'>('home');
-  const [dest, setDest] = useState('');
   const [datePickerState, setDatePickerState] = useState<{
     isOpen: boolean;
     startDate: string;
@@ -84,7 +83,7 @@ function App() {
   if (view === 'proposals') {
     return (
       <div className="min-h-screen bg-white">
-        <Proposals destination={dest} onBack={() => navigate('/itinerario')} />
+        <Proposals onBack={() => navigate('/itinerario')} />
         <Footer />
         <SpeedInsights />
       </div>
