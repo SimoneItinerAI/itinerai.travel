@@ -49,7 +49,7 @@ export default function ItineraryTimeline({ itinerary, onUpdate }: ItineraryTime
       <h2 className="text-2xl font-bold text-slate-900 mb-6">Itinerario giorno per giorno</h2>
 
       <div className="space-y-6">
-        {itinerary.days.map((day) => (
+        {itinerary.days.map((day, index) => (
           <div key={day.dayIndex} className="space-y-3">
             <ItineraryDayCard
               day={day}
@@ -57,6 +57,7 @@ export default function ItineraryTimeline({ itinerary, onUpdate }: ItineraryTime
               loading={regeneratingDay === day.dayIndex}
               onChange={(updated) => handleDayChange(day.dayIndex, updated)}
               onDeleteItem={(itemIdx) => handleDeleteItem(day.dayIndex, itemIdx)}
+              defaultExpanded={index === 0}
             />
             <div className="flex items-center gap-3">
               <button

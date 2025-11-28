@@ -18,9 +18,11 @@ export type TripParams = {
 };
 
 export interface ItineraryDayItem {
+  time?: string;
   timeOfDay?: 'morning' | 'afternoon' | 'evening';
   description: string;
   poiId?: string;
+  type?: 'culture' | 'food' | 'nature' | 'shopping' | 'entertainment' | 'transport' | 'other';
 }
 
 export interface ItineraryDay {

@@ -62,6 +62,21 @@ export default function FlightsCard({ params }: FlightsCardProps) {
       </div>
 
       <div className="p-5 space-y-4">
+        <div className="bg-gradient-to-br from-brand-blue/10 to-brand-teal/10 rounded-xl p-4 border border-brand-blue/20">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-slate-600 mb-1">Prezzo indicativo per persona</p>
+              <p className="text-2xl font-bold text-brand-blue">€150 - €400</p>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-white/80 flex items-center justify-center">
+              <svg className="w-6 h-6 text-brand-blue" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-xs text-slate-500 mt-2">Volo andata e ritorno incluso</p>
+        </div>
+
         <div className="flex items-center justify-between text-sm">
           <span className="text-slate-600">Date:</span>
           <span className="font-medium text-slate-900">

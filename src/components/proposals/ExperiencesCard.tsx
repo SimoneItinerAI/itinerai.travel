@@ -33,6 +33,21 @@ export default function ExperiencesCard({ params, itinerary }: ExperiencesCardPr
       </div>
 
       <div className="p-5 space-y-4">
+        <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 rounded-xl p-4 border border-emerald-500/20">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-slate-600 mb-1">Prezzo indicativo per persona</p>
+              <p className="text-2xl font-bold text-emerald-600">€25 - €120</p>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-white/80 flex items-center justify-center">
+              <svg className="w-6 h-6 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-xs text-slate-500 mt-2">Tour guidati, degustazioni, attività culturali</p>
+        </div>
+
         {topPois.length > 0 ? (
           <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
             <h3 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">

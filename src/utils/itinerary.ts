@@ -275,41 +275,51 @@ function distributePoisAcrossDays(pois: CityPoi[], params: TripParams): FullItin
     if (slice.length > 0) {
       const iconicPoi = slice[0];
       items.push({
+        time: '09:00',
         timeOfDay: 'morning',
-        description: `🏛️ Luogo iconico: ${iconicPoi.name}${iconicPoi.category ? ` - ${iconicPoi.category}` : ''}`,
+        description: `Luogo iconico: ${iconicPoi.name}${iconicPoi.category ? ` - ${iconicPoi.category}` : ''}`,
         poiId: iconicPoi.id,
+        type: 'culture',
       });
     }
 
     if (slice.length > 1) {
       const culturalPoi = slice[1];
       items.push({
+        time: '11:30',
         timeOfDay: 'afternoon',
-        description: `🎨 Esperienza culturale: ${culturalPoi.name}`,
+        description: `Esperienza culturale: ${culturalPoi.name}`,
         poiId: culturalPoi.id,
+        type: 'culture',
       });
     }
 
     if (slice.length > 2) {
       const hiddenPoi = slice[slice.length - 1];
       items.push({
+        time: '14:30',
         timeOfDay: 'afternoon',
-        description: `💎 Gemma nascosta: ${hiddenPoi.name} - Un luogo autentico lontano dalle folle turistiche`,
+        description: `Gemma nascosta: ${hiddenPoi.name} - Un luogo autentico lontano dalle folle turistiche`,
         poiId: hiddenPoi.id,
+        type: 'nature',
       });
     }
 
     const experience = experienceTypes[day % experienceTypes.length];
     items.push({
+      time: '18:00',
       timeOfDay: 'evening',
-      description: `✨ Esperienza locale: ${experience}`,
+      description: `Esperienza locale: ${experience}`,
+      type: experience.includes('gastronomico') || experience.includes('cucina') || experience.includes('vini') || experience.includes('mercati') ? 'food' : 'entertainment',
     });
 
     if (slice.length > 3) {
       const extraPoi = slice[2];
       items.push({
-        description: `📍 Tappa extra: ${extraPoi.name}`,
+        time: '16:00',
+        description: `Tappa extra: ${extraPoi.name}`,
         poiId: extraPoi.id,
+        type: 'other',
       });
     }
 

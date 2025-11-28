@@ -38,6 +38,21 @@ export default function AccommodationCard({ params }: AccommodationCardProps) {
       </div>
 
       <div className="p-5 space-y-4">
+        <div className="bg-gradient-to-br from-brand-orange/10 to-brand-orangelight/10 rounded-xl p-4 border border-brand-orange/20">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-slate-600 mb-1">Prezzo indicativo a notte</p>
+              <p className="text-2xl font-bold text-brand-orange">€60 - €180</p>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-white/80 flex items-center justify-center">
+              <svg className="w-6 h-6 text-brand-orange" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-xs text-slate-500 mt-2">Da hotel 3★ ad appartamenti di lusso</p>
+        </div>
+
         <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
           <h3 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
             <svg className="w-4 h-4 text-brand-orange" fill="currentColor" viewBox="0 0 20 20">
@@ -57,18 +72,20 @@ export default function AccommodationCard({ params }: AccommodationCardProps) {
         <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
           <h3 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
             <svg className="w-4 h-4 text-brand-blue" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
               <path
                 fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.51-1.31c-.562-.649-1.413-1.076-2.353-1.253V5z"
+                d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                 clipRule="evenodd"
               />
             </svg>
-            Fascia di prezzo
+            Include
           </h3>
-          <p className="text-sm text-slate-600">
-            Da €€ a €€€ in base alla categoria e posizione
-          </p>
+          <ul className="text-sm text-slate-600 space-y-1">
+            <li>• WiFi gratuito</li>
+            <li>• Cancellazione flessibile</li>
+            <li>• Recensioni verificate</li>
+          </ul>
         </div>
 
         <div className="space-y-3">
