@@ -52,3 +52,10 @@ export function buildFlightsUrl(ctx: BaseItineraryContext): string {
   return flightsConfig.baseUrl + encodeURIComponent(city);
 }
 
+export function buildTripAdvisorUrl(ctx: { city: string; query?: string }): string {
+  const base = 'https://www.tripadvisor.it/Search';
+  const q = [ctx.query || '', ctx.city].join(' ').trim();
+  const url = new URL(base);
+  url.searchParams.set('q', q);
+  return url.toString();
+}
