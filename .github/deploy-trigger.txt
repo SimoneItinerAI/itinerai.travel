@@ -1,0 +1,2 @@
+trigger: push for deploy on itinerai.travel
+date: 2025-11-29
